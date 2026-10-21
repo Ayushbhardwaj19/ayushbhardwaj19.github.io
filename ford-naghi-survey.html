@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Share your feedback | Ford Mohamed Yousuf Naghi Motors</title>
+<!-- ==== ADD YOUR EMARSYS WEB EXTEND SNIPPET HERE (head) ==== -->
+<style>
+:root{--navy:#00095b;--btn:#0b5fe6;--ink:#1d1d1d;--mute:#5b6370;--line:#dfe3ea;--pad:clamp(20px,7vw,104px)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"FordAntenna","Ford Antenna","Segoe UI",Helvetica,Arial,sans-serif;color:var(--navy);background:#fff;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0}
+:focus-visible{outline:3px solid var(--btn);outline-offset:3px}
+
+header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:96px;padding:0 44px;background:#fff;position:sticky;top:0;z-index:20}
+.nav{display:flex;gap:34px;font-weight:700;font-size:19px;letter-spacing:.2px}
+.nav a:hover{text-decoration:underline;text-underline-offset:6px}
+.logo{display:block;width:104px}.logo img{width:100%;display:block}
+.right{display:flex;align-items:center;justify-content:flex-end;gap:36px;color:#000}
+.dealer{font-size:13px;font-weight:700;line-height:1.25;text-align:right}
+.dealer .ar{display:block;font-size:12px;font-weight:600}
+.burger{display:none;background:none;color:var(--navy)}
+
+.intro{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:30px;padding:56px var(--pad) 20px}
+.intro h1{font-size:clamp(36px,4.6vw,60px);font-weight:400;line-height:1.1;margin-bottom:20px}
+.intro p{font-size:20px;line-height:1.5;color:#2d3340;max-width:46ch}
+.intro .car{display:flex;justify-content:center}
+.intro .car img{width:100%;max-width:520px;height:auto;display:block}
+.intro .car svg{width:90%;opacity:.8}
+
+form{padding:20px var(--pad) 70px;max-width:calc(980px + var(--pad)*2)}
+.progress{display:flex;align-items:center;gap:14px;margin-bottom:26px;font-size:16px;color:var(--mute)}
+.bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--btn);transition:width .3s}
+.q{padding:30px 0;border-top:1px solid var(--line)}
+.q h2{font-size:clamp(22px,2.4vw,30px);font-weight:400;line-height:1.25;margin-bottom:6px}
+.q .hint{color:var(--mute);font-size:16px;margin-bottom:26px}
+.sl{display:grid;grid-template-columns:1fr 78px;align-items:center;gap:22px}
+.val{height:60px;border-radius:12px;border:2px solid var(--line);display:grid;place-items:center;font-size:30px;font-weight:700;color:#9aa1ad;transition:.15s}
+.q.done .val{border-color:var(--btn);color:var(--btn)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:4px;background:linear-gradient(var(--btn),var(--btn)) 0/var(--p,0%) 100% no-repeat,var(--line);outline-offset:10px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:#a9a9a9;border:4px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.35);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#a9a9a9;border:4px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.35);cursor:pointer}
+.q.done input[type=range]::-webkit-slider-thumb{background:var(--btn)}
+.q.done input[type=range]::-moz-range-thumb{background:var(--btn)}
+.ticks{display:grid;grid-template-columns:repeat(10,1fr);margin:12px 0 0;padding:0 4px;font-size:14px;color:var(--mute);text-align:center}
+.ends{display:flex;justify-content:space-between;margin-top:6px;font-size:14px;color:var(--mute);font-weight:600}
+.sl .col{min-width:0}
+.cm{padding:30px 0;border-top:1px solid var(--line)}
+.cm h2{font-size:clamp(22px,2.4vw,30px);font-weight:400;margin-bottom:14px}
+textarea{width:100%;min-height:120px;padding:16px;border:1px solid #b8c0d0;border-radius:12px;font:inherit;font-size:17px;color:var(--ink);resize:vertical}
+.go{display:flex;align-items:center;gap:20px;margin-top:10px;flex-wrap:wrap}
+.btn{background:var(--btn);color:#fff;border-radius:999px;padding:17px 44px;font-size:18px;font-weight:600;transition:filter .15s}
+.btn:hover{filter:brightness(.9)}
+.btn:disabled{background:#a9a9a9;cursor:not-allowed;filter:none}
+.err{color:#b3261e;font-size:15px;min-height:1.2em}
+
+.thanks{display:none;text-align:center;padding:80px var(--pad) 110px}
+.thanks .ck{width:84px;height:84px;border-radius:50%;background:var(--btn);margin:0 auto 26px;display:grid;place-items:center}
+.thanks h1{font-size:clamp(34px,4.2vw,54px);font-weight:400;margin-bottom:14px}
+.thanks p{font-size:20px;color:#2d3340;max-width:48ch;margin:0 auto 30px}
+.thanks .sum{display:inline-block;text-align:left;border:1px solid var(--line);border-radius:12px;padding:20px 28px;margin-bottom:32px;font-size:17px}
+.thanks .sum div{display:flex;justify-content:space-between;gap:40px;padding:5px 0}
+.thanks .sum b{color:var(--btn)}
+body.sent .intro,body.sent form{display:none}body.sent .thanks{display:block}
+
+footer{background:var(--navy);color:#c9cdea;padding:40px var(--pad);font-size:14px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+footer a:hover{text-decoration:underline}
+
+@media(max-width:1000px){.nav{gap:20px;font-size:16px}.dealer{display:none}.intro{grid-template-columns:1fr}.intro .car{order:-1}}
+@media(max-width:700px){
+ header{grid-template-columns:auto 1fr auto;padding:0 18px;height:76px}
+ .nav{display:none}.burger{display:block}
+ .nav.open{display:flex;flex-direction:column;position:absolute;top:76px;left:0;right:0;background:#fff;padding:10px 24px 20px;gap:18px;box-shadow:0 8px 16px rgba(0,0,0,.1)}
+ .logo{width:90px;justify-self:center;grid-column:2}
+ .sl{grid-template-columns:1fr 62px;gap:14px}.val{height:52px;font-size:26px}
+ .btn{width:100%}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<!-- ==== ADD YOUR EMARSYS WEB EXTEND SNIPPET HERE (body start, if needed) ==== -->
+
+<header>
+ <button class="burger" id="burger" aria-label="Menu"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+ <nav class="nav" id="nav" aria-label="Main"><a href="#">Vehicles</a><a href="#">Shop</a><a href="#">Owner</a><a href="#">Latest Offers</a></nav>
+ <a class="logo" href="#" aria-label="Ford"><img alt="Ford" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUiIHZpZXdCb3g9IjAgMTU1IDUxMiAyMDIiPjxwYXRoIGQ9Ik0yNTYgMTYzLjlDMTE0LjYgMTYzLjkgMCAyMDUgMCAyNTZjMCA1MC45IDExNC42IDkyLjEgMjU2IDkyLjEgMTQxLjUgMCAyNTYtNDEuMiAyNTYtOTIuMSAwLTUxLTExNC41LTkyLjEtMjU2LTkyLjEiIHN0eWxlPSJmaWxsOiMwMDA5NWIiLz48cGF0aCBkPSJNMjU3LjMgMzQwLjFjLTEzNi4yIDAtMjQ2LjYtMzgtMjQ2LjYtODUgMC00Ni45IDExMC40LTg1IDI0Ni42LTg1czI0Ni42IDM4IDI0Ni42IDg1YzAgNDYuOS0xMTAuNCA4NS0yNDYuNiA4NW0wLTE2Mi43Yy0xMzEuNCAwLTIzNy45IDM0LjctMjM3LjkgNzcuNnMxMDYuNSA3Ny42IDIzNy45IDc3LjYgMjM3LjktMzQuOCAyMzcuOS03Ny42LTEwNi41LTc3LjYtMjM3LjktNzcuNk0xOTMgMTkxLjNjLTMuNSAwLTcgLjEtMTAuNi40LTIzLjUgMi00NS45IDE1LjEtNDYgMzUgMCAxMC4xIDcuMiAxOC4zIDE4LjUgMTcuOSAxMy4yLS40IDI0LTEwLjkgMjkuNy0yNC4xIDIuMi01LTEuOC03LjEtMy43LTQuMi0zLjMgNS03LjkgOS4xLTEzLjMgMTEuNy02LjIgMy0xMi44IDIuMi0xNC45LTIuOC0yLjgtNyAzLjEtMTcuNiAxNi41LTIyLjUgMTkuNC03LjEgMzkuNy0yLjQgNTkuMiAxLjIuMyAwIDEuMy42LjQgMS0zLjUgMS45LTYuOSAzLjQtMTIuMyA4LTMuOCAzLjMtOC45IDcuNi0xMi44IDEyLjNzLTYuNiA4LjgtMTAuMiAxMy40Yy0uNS43LTEuMS42LTEuMS42LTguOCAxLjUtMTcuNSAyLjUtMjUuNCA3LjktMS42IDEuMS0yLjMgMy4xLTEuNCA0LjYuOSAxLjMgMi45IDEuNSA0LjMuNSA0LjktMy42IDEwLTUuNCAxNS44LTUuNS4zIDAgLjQuMS40LjJzMCAuMy0uMS40Yy04LjcgMTEuOS0xMC45IDE0LjYtMTcuNCAyMi4xLTMuMyAzLjgtNi42IDctMTAuMyAxMC40LTE0LjkgMTMuNy0zMC44IDEzLjQtMzYuNiA0LjktMy40LTUuMS0zLTEwLjUtLjctMTUgMi44LTUuNSA4LjMtOS41IDEzLTExLjkgMS43LS45IDIuMi0zLjEuNS01LTEuMS0xLjMtMy44LTEuNS01LjctMS4yLTYuMSAxLjEtMTMuMyA1LjctMTcuNSAxMS4xLTQuOCA2LjEtNy4yIDEzLjYtNi40IDIyIDEuNCAxNS4xIDE0IDIzLjkgMjguMyAyMy44IDExLjQtLjEgMjIuMS0zLjUgMzQuOS0xNi40IDEyLTEyLjEgMjIuOS0zMC4xIDMzLjItNDYuOC4zLS41LjUtLjggMi4xLTEgNi40LS44IDE1LjktMS43IDIyLTIgMS40LS4xIDEuNi0uMSAyLjIuNiAxLjYgMiA0IDMuNyA1LjkgNC43LjkuNSAxLjQuNyAyLjEuOC45IDAgMS42LS41IDIuMS0xIC42LS43LjgtMS42LjUtMi4yLS40LS42LTQuNi0yLjktNC43LTMuOS0uMS0uNi42LS43LjYtLjcgMy4xLTEgNi40LTMgOC4zLTYuN3MyLjItOC42LTEuMy0xMS4zYy0zLjEtMi40LTcuOC0yLTExLjUgMS4zLTMuNyAzLjItNC45IDcuOS00LjQgMTIgLjEuNy4xIDEtLjkgMS01LjYuNC0xMSAuNi0xNyAuOS0uNCAwLS41LS4yLS4zLS41IDYuOS0xMS45IDE3LjMtMjAuNCAyOC43LTI4LjguOC0uNi41LTEuNi41LTIuNSAyMC43IDQuNCA0MC42IDEyLjcgNjIuMSAxMi41IDguOS0uMSAxNy40LTEuNCAyNS41LTUuOCA3LjEtMy45IDEwLTcuNCAxMC4yLTExLjEuMi0yLjYtMS42LTQuMi00LjItMy42LTIxLjcgNC45LTQyLjMgNC45LTYzLjkgMi4zLTI0LjgtMy00OC40LTkuMS03Mi45LTltNDMuMiAzNC41Yy41IDAgMSAuMiAxLjQuNSAxLjEgMSAuNiAzLjQtLjYgNS0xLjMgMS44LTMuNCAzLjQtNS4zIDMuOC0uNC4xLS43LS4xLS45LTEtLjMtMi4zLjQtNS4zIDIuOS03LjUuNy0uNSAxLjctLjggMi41LS44bTE3My45LjRoLTEzLjJjLTEgMC0xLjUuMS0xLjkgMS0xLjUgMi45LTIwIDMwLjMtMjMuNCAzNS42LS42LjgtMS4zLjctMS40LS4yLS4zLTMuMi0zLjEtNi44LTcuNC04LjUtMy4zLTEuMy02LjUtMS42LTkuOS0xLjEtNi4xLjgtMTEuNSA0LTE2LjIgNy42LTcuMiA1LjQtMTMuMyAxMi40LTIxLjMgMTcuNi00LjQgMi44LTEwLjMgNS4zLTE0LjMgMS42LTMuNi0zLjMtMy4yLTEwLjcgMi4zLTE2LjQuNi0uNiAxLjMtLjEgMS4yLjQtLjUgMi42LjEgNS4xIDIuMSA2LjkgMi40IDIuMSA1LjkgMi40IDguOCAxIDMuNS0xLjcgNS41LTUgNi4xLTguOC45LTUuOC0zLjYtMTAuOS05LjMtMTEuNC00LjYtLjMtOSAxLjMtMTMuMyA0LjgtMi4yIDEuOC0zLjQgMy4xLTUuMiA1LjctLjUuNi0xLjIuNy0xLjEtLjIuMi03LjQtMi45LTExLjYtOS4xLTExLjgtNC44LS4xLTEwIDIuNS0xNCA1LjctNC40IDMuNS04LjMgOC4xLTEyLjQgMTIuNS0uNS41LTEgLjUtMS4xLS41LS4xLTQuOS0xLjQtOS43LTMuNy0xMy4xLS44LTEuMi0yLjUtMS44LTQtMS0uNy40LTMgMS40LTQuNyAyLjgtLjguNy0xLjIgMS43LS44IDIuOSAyLjIgNy40IDEuNyAxNS43LTEuMyAyMi44LTIuOCA2LjUtOC4yIDEyLjMtMTQuNSAxNC4zLTQuMiAxLjMtOC41LjctMTEuMi0zLTMuNy01LjEtMi4yLTEzLjggMy4zLTIxLjEgNC45LTYuNCAxMS45LTEwLjUgMTguOS0xMy4xLjgtLjMgMS0uOC44LTEuNS0uNC0xLjEtMS0yLjctMS4yLTMuNC0uNi0xLjctMi40LTItNC42LTEuNy01LjEuNi05LjcgMi4zLTE0LjIgNC43LTExLjkgNi4zLTE3LjggMTguNS0yMC40IDI1LTEuMyAzLjEtMi4zIDUuMS0zLjcgNi44LTEuOSAyLjMtNC4yIDQuNC04LjUgOC4yLS40LjMtLjcgMS4xLS40IDEuNy40LjkgMi43IDQgMy4zIDQuMy43LjMgMS41LS4xIDEuOC0uNCAzLTIgNi42LTUuMiA4LjQtNy40LjYtLjcgMS4zLS40IDEuNi43IDEuNiA1LjggNS45IDEwLjUgMTEuOSAxMi41IDEwLjkgMy42IDIyLjItMS42IDMwLjctMTAuOCA1LjQtNS44IDcuNC05LjYgOS40LTEyLjEgMy41LTQuMyAxMC40LTE0IDE4LjctMjAuMiAzLTIuMyA2LjYtNCA4LjQtMi45IDEuNC45IDEuOSAzLjEtLjQgNy4zLTguNCAxNS4yLTIwLjggMzMuMS0yMy4xIDM3LjUtLjQuOC0uMSAxLjMuNyAxLjNoMTIuOGMuNyAwIDEtLjMgMS4zLS44IDYuNS0xMCAxMi41LTE5LjYgMTkuMS0yOS40LjQtLjYuNy0uMS43LjEuMSAyLjMuNyA1LjQgMi4xIDcuNSAyLjUgMy44IDYgNS40IDkuOCA1LjUgMy4xIDAgNC42LS40IDgtMS43IDIuMy0uOSA0LjUtMiA2LjUtMy41IDEtLjcgMS4xLjUgMS4xLjYtMS41IDggLjQgMTcuNCA4LjMgMjEuMyA5LjYgNC43IDIwLTEuOSAyNi4xLTcuOC42LS42IDEuMi0uNSAxLjMuNy4xIDIuMyAxLjIgNC45IDMgNi44IDUuMSA1IDE1LjMgMyAyNS41LTQuOCA2LjYtNSAxMy41LTEyLjEgMTkuNy0xOS43LjItLjMuNC0uOCAwLTEuMi0uOS0xLTIuMy0yLjEtMy4zLTMtLjQtLjQtMS4xLS4zLTEuNCAwLTYuNCA2LTEyLjEgMTIuOC0yMC40IDE4LjUtMi44IDEuOS03LjMgMy41LTkuMy44LS44LTEtLjctMi41LjEtNC40IDIuNC02IDQwLjctNjMuNyA0Mi43LTY3LjEuMi0uNS0uMi0xLS45LTFtLTUzLjYgMzYuMWMxIDAgMS45LjIgMi44LjYgNC43IDIuMiAzLjIgNy42IDEuMSAxMS45LS4xLjMtLjIuNi0uMS45LjEuNC43LjkgMS4yIDEuMS4yLjEuMy4yLjEuNy0xLjYgMy41LTMuMSA1LjQtNS4yIDguNC0xLjkgMi44LTQgNC45LTYuNSA3LTMuOSAzLjItOS4yIDYuNi0xMy43IDQuMy0yLTEtMi44LTMuNy0yLjgtNS45LjEtNi4yIDIuOS0xMi42IDgtMTguOSA1LjItNi4zIDEwLjctMTAuMSAxNS4xLTEwLjEiIHN0eWxlPSJmaWxsOiNmZmYiLz48L3N2Zz4="></a>
+ <div class="right">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#00095b" stroke-width="1.4" aria-label="Language"><circle cx="12" cy="12" r="10"/><ellipse cx="12" cy="12" rx="4.2" ry="10"/><path d="M2 12h20M4 6.5h16M4 17.5h16"/></svg>
+  <div class="dealer"><span class="ar">شركة محمد يوسف ناغي للسيارات</span>Mohamed Yousuf Naghi Motors Co.</div>
+ </div>
+</header>
+
+<section class="intro">
+ <div>
+  <h1>How is your 2026 Mustang?</h1>
+  <p>Thank you for choosing Ford. Tell us about your purchase in under two minutes. Your feedback helps Naghi Motors improve every visit.</p>
+ </div>
+ <div class="car"><img id="carImg" referrerpolicy="no-referrer" alt="2026 Ford Mustang" src="https://cdn.alnaghicms.com/storage/ford_common/car-data/side-images/new-mustang.webp"></div>
+</section>
+
+<form id="survey" novalidate>
+ <div class="progress"><span id="pTxt">0 of 5 answered</span><div class="bar"><i id="pBar"></i></div></div>
+ <div id="qs"></div>
+ <div class="cm">
+  <h2>Anything else you would like to tell us? <span style="color:var(--mute);font-size:.7em">(optional)</span></h2>
+  <textarea id="comment" placeholder="Share what we did well or what we could improve"></textarea>
+ </div>
+ <div class="go"><button class="btn" id="submit" type="submit">Submit feedback</button><span class="err" id="err" role="alert"></span></div>
+</form>
+
+<section class="thanks" id="thanks">
+ <div class="ck"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+ <h1>Thank you for your feedback</h1>
+ <p>We have received your answers about your 2026 Ford Mustang. A member of the Naghi Motors team may contact you if you asked us to follow up.</p>
+ <div class="sum" id="sum"></div><br>
+ <a class="btn" href="#" style="display:inline-block">Back to Vehicles</a>
+</section>
+
+<footer>
+ <span>&copy; 2026 Mohamed Yousuf Naghi Motors Co. Demo replica for presentation purposes.</span>
+ <span><a href="tel:920029700">Toll-free 920029700</a></span>
+</footer>
+
+<script>
+var QUESTIONS=[
+ {id:"overall",t:"Overall, how satisfied are you with your 2026 Ford Mustang purchase?",h:"Think about the whole experience from first visit to delivery.",lo:"Very dissatisfied",hi:"Extremely satisfied",s:"Overall satisfaction"},
+ {id:"sales",t:"How would you rate the service you received from our sales team?",h:"Product knowledge, friendliness and how well we answered your questions.",lo:"Poor",hi:"Excellent",s:"Sales experience"},
+ {id:"drive",t:"How would you rate the performance and driving experience of your Mustang?",h:"Power, handling, braking and ride comfort.",lo:"Poor",hi:"Outstanding",s:"Driving experience"},
+ {id:"design",t:"How do you rate the design, interior quality and technology?",h:"Styling, cabin materials, screen and connectivity features.",lo:"Poor",hi:"Excellent",s:"Design and technology"},
+ {id:"value",t:"How would you rate the value for money of your purchase?",h:"Price, financing options and what you received for it.",lo:"Poor value",hi:"Great value",s:"Value for money"}
+];
+var ans={};
+var $=function(s){return document.querySelector(s)};
+function track(n,d){d=d||{};console.log("[demo-event]",n,d);document.dispatchEvent(new CustomEvent("demo:event",{detail:{name:n,data:d}}))}
+
+var ticks="";for(var i=1;i<=10;i++)ticks+="<span>"+i+"</span>";
+$("#qs").innerHTML=QUESTIONS.map(function(q,i){
+ return '<div class="q" id="q_'+q.id+'" data-question="'+q.id+'"><h2>'+(i+1)+'. '+q.t+'</h2><p class="hint">'+q.h+'</p>'+
+  '<div class="sl"><div class="col"><input type="range" min="1" max="10" step="1" value="5" id="r_'+q.id+'" data-id="'+q.id+'" aria-label="'+q.s+', 1 to 10">'+
+  '<div class="ticks" aria-hidden="true">'+ticks+'</div><div class="ends"><span>1 &middot; '+q.lo+'</span><span>10 &middot; '+q.hi+'</span></div></div>'+
+  '<div class="val" id="v_'+q.id+'" aria-live="polite">&ndash;</div></div></div>';
+}).join("");
+
+function paint(r){r.style.setProperty("--p",((r.value-1)/9*100)+"%")}
+function answer(r){
+ var id=r.dataset.id,first=!(id in ans);
+ ans[id]=+r.value;paint(r);
+ $("#q_"+id).classList.add("done");$("#v_"+id).textContent=r.value;
+ var n=Object.keys(ans).length;
+ $("#pTxt").textContent=n+" of "+QUESTIONS.length+" answered";$("#pBar").style.width=(n/QUESTIONS.length*100)+"%";
+ $("#err").textContent="";
+ if(first&&n===1)track("survey_start",{vehicle:"2026 Ford Mustang"});
+ track("survey_answer",{question:id,score:ans[id]});
+}
+document.querySelectorAll("input[type=range]").forEach(function(r){
+ paint(r);
+ r.addEventListener("input",function(){answer(r)});
+ r.addEventListener("click",function(){if(!(r.dataset.id in ans))answer(r)});   /* tapping the default position counts as an answer */
+ r.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){if(!(r.dataset.id in ans))answer(r)}});
+});
+
+$("#survey").addEventListener("submit",function(e){
+ e.preventDefault();
+ var missing=QUESTIONS.filter(function(q){return !(q.id in ans)});
+ if(missing.length){
+  $("#err").textContent="Please answer all "+QUESTIONS.length+" rating questions ("+missing.length+" left).";
+  $("#q_"+missing[0].id).scrollIntoView({behavior:"smooth",block:"center"});return;
+ }
+ var vals=QUESTIONS.map(function(q){return ans[q.id]});
+ var avg=Math.round(vals.reduce(function(a,b){return a+b},0)/vals.length*10)/10;
+ var payload={vehicle:"2026 Ford Mustang",answers:ans,average:avg,comment:$("#comment").value.trim()};
+ track("survey_submit",payload);
+ $("#sum").innerHTML=QUESTIONS.map(function(q){return "<div><span>"+q.s+"</span><b>"+ans[q.id]+" / 10</b></div>"}).join("")+"<div><span>Average</span><b>"+avg+" / 10</b></div>";
+ document.body.classList.add("sent");window.scrollTo({top:0,behavior:"smooth"});
+});
+$("#burger").onclick=function(){$("#nav").classList.toggle("open")};
+$("#carImg").onerror=function(){this.style.display="none"};
+track("page_view",{page:"survey"});
+</script>
+<!-- ==== ADD YOUR EMARSYS WEB EXTEND SNIPPET HERE (before </body>, if needed) ==== -->
+</body>
+</html>
