@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ford Naghi KSA – Book Your Enquiry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   Ford Naghi KSA – Demo enquiry page (SAP CDP proof of concept)
+   Not an official Ford or Mohamed Yousuf Naghi Motors website.
+   Vehicle images are loaded from the Ford Naghi CDN (cdn.alnaghicms.com).
+   Sends enquiry data to SAP Customer Data Platform via the Ingestion API.
+   Configure the integration in the CONFIG block in the <script> below.
+   ===================================================================== */
+:root{
+  --ink:#0B1424; --ink-2:#3B4658; --muted:#6B7484; --line:#DEE3EA;
+  --bg:#F3F5F8; --card:#FFFFFF; --accent:#066FEF; --accent-dark:#0052C2;
+  --ford:#00095B; --ford-2:#102B4E;
+  --ok:#12805C; --err:#C42B1C;
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.display{font-family:"Inter Tight",Inter,sans-serif}
+
+/* ---------- Header ---------- */
+.topbar{background:#000640;color:#C9D3E6;font-size:12.5px}
+.topbar .inner{max-width:1200px;margin:0 auto;padding:7px 20px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header.nav{position:sticky;top:0;z-index:10;background:var(--ford);border-bottom:1px solid rgba(255,255,255,.12)}
+.nav-inner{max-width:1200px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brandmarks{display:flex;align-items:center;gap:16px}
+.brandmarks img.ford{height:34px;width:auto}
+.brandmarks .sep{width:1px;height:30px;background:rgba(255,255,255,.3)}
+.brandmarks img.naghi{height:30px;width:auto}
+.nav-links{display:flex;gap:26px;font-size:14px;font-weight:500;color:#C9D3E6}
+.nav-links a{text-decoration:none}.nav-links a:hover{color:#fff}
+.nav-cta{background:#fff;color:var(--ford);border:0;border-radius:999px;padding:9px 18px;font-weight:600;font-size:14px;text-decoration:none;white-space:nowrap}
+.nav-cta:hover{background:var(--accent);color:#fff}
+@media (max-width:900px){.nav-links{display:none}}
+@media (max-width:480px){.nav-inner{padding:10px 16px;gap:10px}.brandmarks{gap:10px;min-width:0}.brandmarks img.ford{height:22px}.brandmarks img.naghi{height:18px;max-width:150px}.nav-cta{padding:7px 12px;font-size:12.5px}.topbar .inner span:last-child{display:none}}
+
+/* ---------- Hero ---------- */
+.hero{background:radial-gradient(900px 420px at 85% 0%,#E3ECFA 0%,transparent 65%),linear-gradient(180deg,#FFFFFF,#EEF2F7);overflow:hidden;border-bottom:1px solid var(--line)}
+.hero-inner{max-width:1200px;margin:0 auto;padding:48px 20px 120px;display:grid;grid-template-columns:1fr 1.1fr;gap:30px;align-items:center}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--accent)}
+.hero h1{font-size:clamp(34px,5vw,54px);line-height:1.04;margin:0 0 16px;letter-spacing:-.02em;color:var(--ford)}
+.hero p.lead{color:var(--ink-2);font-size:17px;max-width:500px;margin:0 0 26px}
+.hero-stats{display:flex;gap:30px;flex-wrap:wrap}
+.hero-stats div{font-size:13px;color:var(--muted)}
+.hero-stats b{display:block;font-family:"Inter Tight",sans-serif;font-size:24px;color:var(--ford)}
+.hero-visual{position:relative;min-height:260px}
+.hero-car{width:100%;max-width:640px;display:block;margin-left:auto;mix-blend-mode:multiply;transition:opacity .4s}
+.hero-tabs{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:10px}
+.hero-tabs button{font:inherit;font-size:12.5px;font-weight:600;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;cursor:pointer;color:var(--ink-2)}
+.hero-tabs button[aria-pressed="true"]{background:var(--ford);border-color:var(--ford);color:#fff}
+@media (max-width:900px){.hero-inner{grid-template-columns:minmax(0,1fr);padding:32px 16px 110px}.hero-tabs{justify-content:flex-start}.hero-stats b{font-size:20px}}
+
+/* ---------- Form card ---------- */
+.form-wrap{max-width:1200px;margin:-80px auto 0;padding:0 20px 60px;position:relative}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:0 20px 50px rgba(0,9,91,.10),0 2px 6px rgba(0,9,91,.05);padding:34px}
+@media (max-width:600px){.card{padding:22px 16px}}
+.card-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.card-head h2{font-size:28px;margin:0;color:var(--ford)}
+.card-head p{margin:4px 0 0;color:var(--muted)}
+.steps{display:flex;gap:8px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.steps span{padding:5px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+
+fieldset{border:0;margin:0 0 28px;padding:0;min-width:0}
+legend{font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+legend .num{width:24px;height:24px;border-radius:50%;background:var(--ford);color:#fff;display:inline-grid;place-items:center;font-size:12px;letter-spacing:0}
+
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 18px}
+@media (max-width:640px){.grid{grid-template-columns:1fr}}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--ink-2)}
+.field label .req{color:var(--accent)}
+.field input,.field select{width:100%;font:inherit;font-size:15px;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);transition:border-color .15s,box-shadow .15s}
+.field input:focus,.field select:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px rgba(6,111,239,.14)}
+.field .err{display:none;color:var(--err);font-size:12.5px;margin-top:5px}
+.field.invalid input,.field.invalid select{border-color:var(--err)}
+.field.invalid .err{display:block}
+.phone{display:flex}
+.phone .cc{display:grid;place-items:center;padding:0 12px;border:1.5px solid var(--line);border-right:0;border-radius:10px 0 0 10px;background:var(--bg);font-weight:600;color:var(--ink-2)}
+.phone input{border-radius:0 10px 10px 0}
+
+.model,.swatch,.chip{position:relative}
+/* Category filter */
+.cats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.cats button{font:inherit;font-size:13px;font-weight:600;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;cursor:pointer;color:var(--ink-2)}
+.cats button[aria-pressed="true"]{border-color:var(--ford);background:var(--ford);color:#fff}
+/* Car model cards */
+.models{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:1000px){.models{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:560px){.models{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.model input{position:absolute;opacity:0;pointer-events:none}
+.model label{display:block;cursor:pointer;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px 14px;transition:all .15s;height:100%;background:#fff}
+.model label:hover{border-color:#AEB8C6}
+.model input:checked + label{border-color:var(--accent);box-shadow:0 0 0 3px rgba(6,111,239,.15)}
+.model input:focus-visible + label{outline:2px solid var(--ford);outline-offset:2px}
+.model .pic{margin-bottom:6px}
+.model .pic img{display:block;width:100%;aspect-ratio:268/196;object-fit:contain;mix-blend-mode:multiply}
+.model .myear{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--accent)}
+.model .mname{font-weight:700;font-size:15px;color:var(--ford)}
+.model .mtype{font-size:12px;color:var(--muted)}
+.model[hidden]{display:none}
+
+/* Colour swatches */
+.swatches{display:flex;flex-wrap:wrap;gap:12px;min-height:44px;align-items:center}
+.swatch input{position:absolute;opacity:0;pointer-events:none}
+.swatch label{display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 12px 6px 6px;border:1.5px solid var(--line);border-radius:999px;font-size:13px;font-weight:500;background:#fff}
+.swatch .dot{width:26px;height:26px;border-radius:50%;border:1px solid rgba(0,0,0,.15);box-shadow:inset 0 -4px 8px rgba(0,0,0,.15)}
+.swatch input:checked + label{border-color:var(--ford);box-shadow:0 0 0 3px rgba(0,9,91,.12)}
+.swatch input:focus-visible + label{outline:2px solid var(--ford);outline-offset:2px}
+.hint{color:var(--muted);font-size:13px}
+
+/* Budget chips */
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip label{display:block;cursor:pointer;padding:10px 16px;border:1.5px solid var(--line);border-radius:10px;font-size:14px;font-weight:500;background:#fff}
+.chip input:checked + label{background:var(--ford);border-color:var(--ford);color:#fff}
+.chip input:focus-visible + label{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Consent + submit */
+.consent{display:grid;gap:10px;margin-bottom:22px}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--ink-2)}
+.check input{margin-top:3px;width:17px;height:17px;accent-color:var(--accent);flex:none}
+.check.invalid{color:var(--err)}
+.actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+button.submit{background:var(--ford);color:#fff;border:0;border-radius:999px;padding:15px 32px;font:inherit;font-weight:700;font-size:16px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;transition:background .15s}
+button.submit:hover{background:var(--accent)}
+button.submit:disabled{opacity:.6;cursor:progress}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:none}
+button.submit.loading .spinner{display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.form-msg{font-size:14px;font-weight:500}
+.form-msg.error{color:var(--err)}
+
+/* Summary sidebar */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:34px}
+@media (max-width:1000px){.layout{grid-template-columns:1fr}}
+.summary{background:var(--bg);border-radius:12px;padding:20px;align-self:start;position:sticky;top:84px}
+.summary h3{margin:0 0 12px;font-size:15px;color:var(--ford)}
+.summary dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:8px 12px;font-size:13.5px}
+.summary dt{color:var(--muted)}
+.summary dd{margin:0;font-weight:600;text-align:right;overflow-wrap:anywhere}
+.summary .preview{min-height:120px;margin:0 0 12px;display:grid;place-items:center;border-radius:10px;background:#fff;overflow:hidden}
+.summary .preview img{display:block;width:100%;aspect-ratio:268/196;object-fit:contain}
+.summary .preview .ph{color:var(--muted);font-size:12.5px}
+.summary .note{font-size:12px;color:var(--muted);margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+
+/* Success */
+.success{display:none;text-align:center;padding:30px 10px}
+.success .tick{width:64px;height:64px;border-radius:50%;background:#E7F5EF;color:var(--ok);display:grid;place-items:center;margin:0 auto 16px}
+.success h2{margin:0 0 8px;color:var(--ford)}
+.success p{color:var(--muted);margin:0 auto 6px;max-width:540px}
+.success img{max-width:360px;width:100%;margin:6px auto 0;display:block}
+.success .ref{display:inline-block;margin:12px 0 20px;padding:8px 14px;border-radius:8px;background:var(--bg);font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px}
+.btn-ghost{background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:11px 22px;font:inherit;font-weight:600;cursor:pointer}
+
+/* Developer / API panel (for demos) */
+.devbar{max-width:1200px;margin:0 auto;padding:0 20px 40px}
+.devtoggle{background:none;border:1px dashed #AEB8C6;border-radius:8px;padding:8px 12px;font:inherit;font-size:12.5px;color:var(--muted);cursor:pointer}
+.devpanel{display:none;margin-top:12px;background:#0B1424;color:#D5DAE1;border-radius:12px;padding:18px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px}
+.devpanel.open{display:block}
+.devpanel h4{margin:0 0 8px;color:#fff;font-family:Inter,sans-serif;font-size:13px}
+.devpanel .row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.devpanel .pill{background:#1C2638;border-radius:6px;padding:3px 8px}
+.devpanel pre{margin:0 0 14px;background:#131C2C;border-radius:8px;padding:12px;overflow:auto;max-height:340px;white-space:pre-wrap;word-break:break-word}
+
+footer{background:var(--ford);color:#AFBAD0;font-size:13px}
+footer .inner{max-width:1200px;margin:0 auto;padding:26px 20px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="inner"><span>Mohamed Yousuf Naghi Motors · Authorised Ford distributor, Western &amp; Southern regions</span><span>Jeddah · Makkah · Madinah · Taif · Abha · Khamis Mushait · Jazan</span></div></div>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brandmarks">
+      <img class="ford" src="https://cdn.alnaghicms.com/storage/ford_common/new-logo/refreshed/ford-logo-new.svg" alt="Ford">
+      <span class="sep" aria-hidden="true"></span>
+      <img class="naghi" src="https://cdn.alnaghicms.com/storage/ford_common/new-logo/refreshed/naghi-logo-new.svg" alt="Mohamed Yousuf Naghi Motors">
+    </div>
+    <nav class="nav-links" aria-label="Main">
+      <a href="#">Vehicles</a><a href="#">Latest Offers</a><a href="#">Service</a><a href="#">Showrooms</a>
+    </nav>
+    <a class="nav-cta" href="#enquiry">Enquire Now</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <span class="eyebrow">Ford Naghi · Saudi Arabia</span>
+      <h1 class="display">Built Ford Tough. Ready for every Saudi road.</h1>
+      <p class="lead">Tell us which Ford you have in mind and a Ford Naghi sales advisor will call you with the latest offers, finance options and a test drive at your nearest showroom.</p>
+      <div class="hero-stats">
+        <div><b>14</b>model lines</div>
+        <div><b>Western &amp; Southern</b>regions</div>
+        <div><b>3S</b>sales · service · parts</div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <img class="hero-car" id="heroCar" alt="" src="https://cdn.alnaghicms.com/storage/ford_common/car-data/side-images/expedition-25.webp">
+      <div class="hero-tabs" id="heroTabs"></div>
+    </div>
+  </div>
+</section>
+
+<main class="form-wrap" id="enquiry">
+  <div class="card">
+    <div id="formView">
+      <div class="card-head">
+        <div>
+          <h2 class="display">Book your enquiry</h2>
+          <p>Takes under a minute. Fields marked <span style="color:var(--accent)">*</span> are required.</p>
+        </div>
+        <div class="steps"><span>1 · You</span><span>2 · Vehicle</span><span>3 · Budget</span></div>
+      </div>
+
+      <div class="layout">
+        <form id="enquiryForm" novalidate>
+          <fieldset>
+            <legend><span class="num">1</span>Your details</legend>
+            <div class="grid">
+              <div class="field">
+                <label for="firstName">First name <span class="req">*</span></label>
+                <input id="firstName" name="firstName" autocomplete="given-name" required maxlength="50">
+                <div class="err">Please enter your first name.</div>
+              </div>
+              <div class="field">
+                <label for="lastName">Last name <span class="req">*</span></label>
+                <input id="lastName" name="lastName" autocomplete="family-name" required maxlength="50">
+                <div class="err">Please enter your last name.</div>
+              </div>
+              <div class="field">
+                <label for="email">Email <span class="req">*</span></label>
+                <input id="email" name="email" type="email" autocomplete="email" required maxlength="120">
+                <div class="err">Please enter a valid email address.</div>
+              </div>
+              <div class="field">
+                <label for="mobile">Mobile number <span class="req">*</span></label>
+                <div class="phone"><span class="cc">+966</span><input id="mobile" name="mobile" type="tel" inputmode="numeric" autocomplete="tel-national" required maxlength="9" placeholder="5X XXX XXXX"></div>
+                <div class="err">Please enter a valid Saudi mobile number (9 digits starting with 5).</div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend><span class="num">2</span>Your Ford</legend>
+            <div class="field" id="modelField">
+              <label>Vehicle <span class="req">*</span></label>
+              <div class="cats" id="cats" role="group" aria-label="Filter by category"></div>
+              <div class="models" id="models" role="radiogroup" aria-label="Vehicle"></div>
+              <div class="err">Please choose a vehicle.</div>
+            </div>
+            <div class="grid" style="margin-top:16px">
+              <div class="field" id="variantField">
+                <label for="variant">Trim / variant <span class="req">*</span></label>
+                <select id="variant" name="variant" required disabled><option value="">Choose a vehicle first</option></select>
+                <div class="err">Please choose a trim.</div>
+              </div>
+              <div class="field" id="fuelField">
+                <label for="fuel">Powertrain</label>
+                <select id="fuel" name="fuel" disabled><option value="">Choose a vehicle first</option></select>
+              </div>
+            </div>
+            <div class="field" id="colorField" style="margin-top:16px">
+              <label>Colour preference <span class="req">*</span></label>
+              <div class="swatches" id="swatches" role="radiogroup" aria-label="Colour preference"><span class="hint">Choose a vehicle to see available colours.</span></div>
+              <div class="err">Please choose a colour.</div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend><span class="num">3</span>Budget &amp; timeline</legend>
+            <div class="field" id="budgetField">
+              <label>Budget (SAR, incl. VAT) <span class="req">*</span></label>
+              <div class="chips" id="budgets" role="radiogroup" aria-label="Budget"></div>
+              <div class="err">Please choose a budget range.</div>
+            </div>
+            <div class="grid" style="margin-top:16px">
+              <div class="field">
+                <label for="purchaseTimeline">When are you planning to buy?</label>
+                <select id="purchaseTimeline" name="purchaseTimeline">
+                  <option value="">Select</option>
+                  <option value="WITHIN_1_MONTH">Within 1 month</option>
+                  <option value="1_3_MONTHS">1–3 months</option>
+                  <option value="3_6_MONTHS">3–6 months</option>
+                  <option value="JUST_EXPLORING">Just exploring</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="city">City</label>
+                <select id="city" name="city">
+                  <option value="">Select your city</option>
+                  <option>Jeddah</option><option>Makkah</option><option>Madinah</option><option>Taif</option>
+                  <option>Yanbu</option><option>Abha</option><option>Khamis Mushait</option><option>Jazan</option>
+                  <option>Al Baha</option><option>Najran</option><option>Other</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="consent">
+            <label class="check" id="privacyCheck"><input type="checkbox" id="privacyConsent" required> <span>I agree to the <a href="#">Privacy Policy</a> and allow Mohamed Yousuf Naghi Motors to contact me about this enquiry. <span style="color:var(--accent)">*</span></span></label>
+            <label class="check"><input type="checkbox" id="marketingConsent"> <span>Keep me updated on Ford offers, launches and events by email, SMS and WhatsApp.</span></label>
+          </div>
+
+          <div class="actions">
+            <button class="submit" type="submit" id="submitBtn"><span class="spinner"></span><span class="label">Submit enquiry</span></button>
+            <span class="form-msg" id="formMsg" role="status" aria-live="polite"></span>
+          </div>
+        </form>
+
+        <aside class="summary" aria-label="Your selection">
+          <h3>Your selection</h3>
+          <div class="preview" id="previewCar"><span class="ph">Choose a vehicle</span></div>
+          <dl>
+            <dt>Vehicle</dt><dd id="sumModel">–</dd>
+            <dt>Category</dt><dd id="sumType">–</dd>
+            <dt>Trim</dt><dd id="sumVariant">–</dd>
+            <dt>Colour</dt><dd id="sumColor">–</dd>
+            <dt>Budget</dt><dd id="sumBudget">–</dd>
+          </dl>
+          <div class="note">Prices, trims and colours are confirmed by your Ford Naghi sales advisor and may vary by showroom.</div>
+        </aside>
+      </div>
+    </div>
+
+    <div class="success" id="successView" role="status" aria-live="polite">
+      <div class="tick"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></div>
+      <h2 class="display" id="successTitle">Thank you!</h2>
+      <p id="successText">A Ford Naghi sales advisor will call you shortly.</p>
+      <img id="successCar" alt="">
+      <div class="ref">Enquiry reference: <b id="successRef"></b></div><br>
+      <button class="btn-ghost" id="newEnquiry" type="button">Submit another enquiry</button>
+    </div>
+  </div>
+</main>
+
+<div class="devbar">
+  <button class="devtoggle" id="devToggle" type="button" aria-expanded="false">Show API payload (demo view)</button>
+  <div class="devpanel" id="devPanel">
+    <h4>SAP CDP integration</h4>
+    <div class="row" id="devMeta"></div>
+    <h4>Request payload</h4>
+    <pre id="devRequest">Submit the form to see the payload sent to SAP CDP.</pre>
+    <h4>Response</h4>
+    <pre id="devResponse">–</pre>
+  </div>
+</div>
+
+<footer><div class="inner"><span>Demo page for an SAP Customer Data Platform proof of concept – not an official Ford or Mohamed Yousuf Naghi Motors website.</span><span>Privacy · Terms · Cookie settings</span></div></footer>
+
+<script>
+/* =====================================================================
+   CONFIG – edit this block to connect the page to SAP CDP
+   ---------------------------------------------------------------------
+   mode:
+     "mock"   – no network call; shows the payload and a simulated success.
+                Use for rehearsals or when the API is unavailable.
+     "proxy"  – POSTs the payload to proxyUrl (e.g. the included server.js),
+                which adds credentials and forwards it to SAP CDP.
+                Recommended: keeps your userKey/secret off the browser.
+     "direct" – POSTs straight to the CDP Ingestion API from the browser.
+                Only for a sandbox: credentials are visible in the page,
+                and CORS may block the call.
+   ===================================================================== */
+const CONFIG = {
+  mode: "proxy",
+  proxyUrl: "/api/enquiry",
+  direct: {
+    // e.g. https://cdp.eu5-prod.gigya.com  (check your tenant's data centre)
+    baseUrl: "https://cdp.<DATACENTER>.gigya.com",
+    businessUnitId: "<BUSINESS_UNIT_ID>",
+    applicationId: "<APPLICATION_ID>",
+    dataEventId: "<DATA_EVENT_ID>",
+    userKey: "<USER_KEY>",
+    secret: "<SECRET>"
+  },
+  source: "Ford Naghi Website Enquiry Form",
+  brand: "Ford"
+};
+
+/* ---------- Catalogue ----------
+   Line-up and images from en.ford.mynaghi.com/vehicles.
+   Trims and colours are indicative for the demo – align with Ford Naghi before go-live. */
+const IMG = "https://cdn.alnaghicms.com/storage/ford_common/car-data/side-images/";
+const C = { // common Ford paint names
+  white:["Oxford White","#F2F2EF"], star:["Star White","#ECEBE6"], black:["Agate Black","#111214"],
+  grey:["Carbonized Gray","#4A4D52"], silver:["Iconic Silver","#B7BBC0"], blue:["Atlas Blue","#1E3A66"],
+  red:["Rapid Red","#8E1B1F"], green:["Eruption Green","#3E5A4B"], orange:["Cyber Orange","#D2642A"],
+  yellow:["Luxe Yellow","#E2B83A"], grabber:["Grabber Blue","#1D6FD1"], sand:["Desert Sand","#B7A07E"]
+};
+const MODELS = [
+  { id:"TAURUS",      year:2026, name:"Taurus",           cat:"Sedans",      type:"Sedan",              img:"taurus-2026.jpg",
+    variants:["Ambiente","Trend","Titanium"], fuels:["2.0L EcoBoost Petrol","Hybrid"], colors:[C.white,C.black,C.grey,C.silver,C.blue] },
+  { id:"TERRITORY",   year:2026, name:"Territory",        cat:"SUVs",        type:"Compact SUV",        img:"territory_new.webp",
+    variants:["Ambiente","Trend","Titanium"], fuels:["1.5L EcoBoost Petrol"], colors:[C.star,C.black,C.grey,C.silver,C.blue] },
+  { id:"EVEREST",     year:2026, name:"Everest",          cat:"SUVs",        type:"7-seat SUV",         img:"new-everest.jpg",
+    variants:["Trend","Sport","Titanium","Platinum"], fuels:["2.3L EcoBoost Petrol 4x4"], colors:[C.white,C.black,C.grey,C.silver,C.blue,C.sand] },
+  { id:"EXPLORER",    year:2025, name:"Explorer",         cat:"SUVs",        type:"7-seat SUV",         img:"explorer-new.jpg",
+    variants:["XLT","Limited","ST","Platinum"], fuels:["2.3L EcoBoost","3.0L EcoBoost V6"], colors:[C.white,C.black,C.grey,C.silver,C.blue,C.red] },
+  { id:"EXPEDITION",  year:2026, name:"Expedition",       cat:"SUVs",        type:"Full-size SUV",      img:"expedition-25.webp",
+    variants:["XLT","Limited","Platinum","Tremor","Expedition MAX Platinum"], fuels:["3.5L EcoBoost V6"], colors:[C.star,C.black,C.grey,C.silver,C.blue] },
+  { id:"BRONCO",      year:2026, name:"Bronco",           cat:"SUVs",        type:"Off-road SUV",       img:"bronco.webp",
+    variants:["Big Bend","Outer Banks","Badlands","Wildtrak"], fuels:["2.7L EcoBoost V6"], colors:[C.white,C.black,C.grey,C.green,C.orange,C.sand] },
+  { id:"BRONCO_RAPTOR", year:2025, name:"Bronco Raptor",  cat:"Performance", type:"Performance off-road", img:"bronco-raptor.jpg",
+    variants:["Bronco Raptor"], fuels:["3.0L EcoBoost V6"], colors:[C.white,C.black,C.grey,C.orange] },
+  { id:"MACH_E",      year:2025, name:"Mustang Mach-E",   cat:"Electric",    type:"Electric SUV",       img:"mach-e.webp",
+    variants:["Select","Premium","GT"], fuels:["Electric RWD","Electric AWD"], colors:[C.star,C.black,C.grey,C.grabber,C.red] },
+  { id:"RANGER",      year:2025, name:"Ranger",           cat:"Trucks & Vans", type:"Pickup",           img:"Ranger.webp",
+    variants:["XL","XLT","Sport","Wildtrak"], fuels:["2.5L Petrol","2.3L EcoBoost 4x4"], colors:[C.white,C.black,C.grey,C.silver,C.blue,C.sand] },
+  { id:"RANGER_RAPTOR", year:2025, name:"Ranger Raptor",  cat:"Performance", type:"Performance pickup", img:"ranger_raptor.webp",
+    variants:["Ranger Raptor"], fuels:["3.0L EcoBoost V6"], colors:[C.white,C.black,C.grey,C.orange] },
+  { id:"F150",        year:2026, name:"F-150",            cat:"Trucks & Vans", type:"Full-size pickup", img:"f-150.webp",
+    variants:["XL","XLT","Lariat","King Ranch","Platinum"], fuels:["3.5L EcoBoost V6","5.0L V8"], colors:[C.white,C.black,C.grey,C.silver,C.blue,C.red] },
+  { id:"F150_RAPTOR", year:2026, name:"F-150 Raptor",     cat:"Performance", type:"Performance pickup", img:"f-150-raptor.webp",
+    variants:["Raptor","Raptor R"], fuels:["3.5L EcoBoost V6","5.2L Supercharged V8"], colors:[C.white,C.black,C.grey,C.blue] },
+  { id:"MUSTANG",     year:2026, name:"Mustang",          cat:"Performance", type:"Sports coupe",       img:"new-mustang.webp",
+    variants:["EcoBoost","GT","Dark Horse"], fuels:["2.3L EcoBoost","5.0L V8"], colors:[C.white,C.black,C.grey,C.grabber,C.red,C.yellow] },
+  { id:"TRANSIT",     year:2026, name:"Transit",          cat:"Trucks & Vans", type:"Van / bus",        img:"transit-range-new.jpg",
+    variants:["Panel Van","Passenger Bus 14-seat"], fuels:["3.5L Petrol"], colors:[C.white,C.silver] }
+];
+const CATS = ["All", ...new Set(MODELS.map(m => m.cat))];
+const BUDGETS = [
+  { id:"UNDER_100K", label:"Under SAR 100K", min:0,      max:100000 },
+  { id:"100_150K",   label:"SAR 100–150K",   min:100000, max:150000 },
+  { id:"150_200K",   label:"SAR 150–200K",   min:150000, max:200000 },
+  { id:"200_300K",   label:"SAR 200–300K",   min:200000, max:300000 },
+  { id:"300_400K",   label:"SAR 300–400K",   min:300000, max:400000 },
+  { id:"ABOVE_400K", label:"Above SAR 400K", min:400000, max:null }
+];
+const imgUrl = m => IMG + m.img;
+
+/* ---------- Helpers ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const state = { model:null, color:null, budget:null };
+
+/* ---------- Hero rotator ---------- */
+const HERO = ["EXPEDITION","F150","BRONCO","MUSTANG"].map(id => MODELS.find(m => m.id === id));
+let heroIdx = 0, heroTimer;
+$("heroTabs").innerHTML = HERO.map((m,i) => `<button type="button" data-i="${i}" aria-pressed="${i===0}">${esc(m.name)}</button>`).join("");
+function showHero(i){
+  heroIdx = i; const img = $("heroCar");
+  img.style.opacity = 0;
+  setTimeout(() => { img.src = imgUrl(HERO[i]); img.alt = `${HERO[i].year} Ford ${HERO[i].name}`; img.style.opacity = 1; }, 200);
+  document.querySelectorAll("#heroTabs button").forEach(b => b.setAttribute("aria-pressed", b.dataset.i == i));
+}
+document.querySelectorAll("#heroTabs button").forEach(b => b.addEventListener("click", () => { clearInterval(heroTimer); showHero(+b.dataset.i); }));
+heroTimer = setInterval(() => showHero((heroIdx + 1) % HERO.length), 5000);
+
+/* ---------- Render category filter, model cards and budget chips ---------- */
+$("cats").innerHTML = CATS.map((c,i) => `<button type="button" data-cat="${esc(c)}" aria-pressed="${i===0}">${esc(c)}</button>`).join("");
+document.querySelectorAll("#cats button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("#cats button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  document.querySelectorAll(".model").forEach(el => { el.hidden = b.dataset.cat !== "All" && el.dataset.cat !== b.dataset.cat && !el.querySelector("input").checked; });
+}));
+
+$("models").innerHTML = MODELS.map(m => `
+  <div class="model" data-cat="${esc(m.cat)}">
+    <input type="radio" name="carModel" id="m_${m.id}" value="${m.id}">
+    <label for="m_${m.id}">
+      <div class="pic"><img src="${imgUrl(m)}" alt="" loading="lazy"></div>
+      <div class="myear">${m.year}</div>
+      <div class="mname">${esc(m.name)}</div>
+      <div class="mtype">${esc(m.type)}</div>
+    </label>
+  </div>`).join("");
+
+$("budgets").innerHTML = BUDGETS.map(b => `
+  <div class="chip"><input type="radio" name="budget" id="b_${b.id}" value="${b.id}"><label for="b_${b.id}">${esc(b.label)}</label></div>`).join("");
+
+document.querySelectorAll('input[name="carModel"]').forEach(r => r.addEventListener("change", () => selectModel(r.value)));
+document.querySelectorAll('input[name="budget"]').forEach(r => r.addEventListener("change", () => {
+  state.budget = BUDGETS.find(b => b.id === r.value); clearErr("budgetField"); updateSummary();
+}));
+
+function selectModel(id){
+  const m = MODELS.find(x => x.id === id);
+  state.model = m; state.color = null;
+  const v = $("variant"), f = $("fuel");
+  v.disabled = false; f.disabled = false;
+  v.innerHTML = (m.variants.length > 1 ? `<option value="">Select trim</option>` : "") + m.variants.map(x => `<option>${esc(x)}</option>`).join("");
+  f.innerHTML = (m.fuels.length > 1 ? `<option value="">No preference</option>` : "") + m.fuels.map(x => `<option>${esc(x)}</option>`).join("");
+  $("swatches").innerHTML = m.colors.map(([name,hex],i) => `
+    <div class="swatch"><input type="radio" name="color" id="c_${i}" value="${esc(name)}" data-hex="${hex}">
+    <label for="c_${i}"><span class="dot" style="background:${hex}"></span>${esc(name)}</label></div>`).join("");
+  document.querySelectorAll('input[name="color"]').forEach(r => r.addEventListener("change", () => {
+    state.color = { name:r.value, hex:r.dataset.hex }; clearErr("colorField"); updateSummary();
+  }));
+  clearErr("modelField"); clearErr("variantField"); updateSummary();
+}
+$("variant").addEventListener("change", () => { clearErr("variantField"); updateSummary(); });
+
+function updateSummary(){
+  const m = state.model;
+  $("sumModel").textContent = m ? `${m.year} Ford ${m.name}` : "–";
+  $("sumType").textContent = m ? m.type : "–";
+  $("sumVariant").textContent = $("variant").value || "–";
+  $("sumColor").textContent = state.color ? state.color.name : "–";
+  $("sumBudget").textContent = state.budget ? state.budget.label : "–";
+  $("previewCar").innerHTML = m ? `<img src="${imgUrl(m)}" alt="${esc(m.year + " Ford " + m.name)}">` : `<span class="ph">Choose a vehicle</span>`;
+}
+
+/* ---------- Validation ---------- */
+function setErr(fieldId){ $(fieldId).classList.add("invalid"); }
+function clearErr(fieldId){ $(fieldId).classList.remove("invalid"); }
+["firstName","lastName","email","mobile"].forEach(id => $(id).addEventListener("input", () => $(id).closest(".field").classList.remove("invalid")));
+$("mobile").addEventListener("input", e => { e.target.value = e.target.value.replace(/\D/g,"").replace(/^0/,"").slice(0,9); });
+$("privacyConsent").addEventListener("change", () => $("privacyCheck").classList.remove("invalid"));
+$("enquiryForm").addEventListener("change", () => { if (!document.querySelector("#enquiryForm .invalid")) $("formMsg").textContent = ""; });
+
+function validate(){
+  let ok = true, first = null;
+  const fail = (el, fieldEl) => { ok = false; (fieldEl || el.closest(".field")).classList.add("invalid"); first = first || el; };
+  const fn = $("firstName"), ln = $("lastName"), em = $("email"), mo = $("mobile");
+  if (!fn.value.trim()) fail(fn);
+  if (!ln.value.trim()) fail(ln);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em.value.trim())) fail(em);
+  if (!/^5\d{8}$/.test(mo.value)) fail(mo);
+  if (!state.model) fail($("models"), $("modelField"));
+  if (state.model && !$("variant").value) fail($("variant"));
+  if (!state.model || !state.color) fail($("swatches"), $("colorField"));
+  if (!state.budget) fail($("budgets"), $("budgetField"));
+  if (!$("privacyConsent").checked){ ok = false; $("privacyCheck").classList.add("invalid"); first = first || $("privacyConsent"); }
+  if (first) first.scrollIntoView({ behavior:"smooth", block:"center" });
+  return ok;
+}
+
+/* ---------- Payload for SAP CDP ----------
+   Same flat structure and field names as before, so the existing
+   CDP "Enquiry" event mapping keeps working. */
+function buildPayload(){
+  const qs = new URLSearchParams(location.search);
+  const ref = "FN-" + new Date().toISOString().slice(0,10).replace(/-/g,"") + "-" + Math.random().toString(36).slice(2,8).toUpperCase();
+  return {
+    enquiryId: ref,
+    timestamp: new Date().toISOString(),
+    firstName: $("firstName").value.trim(),
+    lastName: $("lastName").value.trim(),
+    email: $("email").value.trim().toLowerCase(),
+    mobile: "+966" + $("mobile").value,
+    brand: CONFIG.brand,
+    carModelCode: state.model.id,
+    carModel: `Ford ${state.model.name} ${state.model.year}`,
+    bodyType: state.model.type,
+    variant: $("variant").value,
+    fuelType: $("fuel").value || null,
+    colorPreference: state.color.name,
+    budgetRange: state.budget.label,
+    budgetMin: state.budget.min,
+    budgetMax: state.budget.max,
+    purchaseTimeline: $("purchaseTimeline").value || null,
+    city: $("city").value || null,
+    privacyConsent: $("privacyConsent").checked,
+    marketingConsent: $("marketingConsent").checked,
+    leadSource: CONFIG.source,
+    utmSource: qs.get("utm_source"),
+    utmMedium: qs.get("utm_medium"),
+    utmCampaign: qs.get("utm_campaign"),
+    pageUrl: location.href.split("?")[0],
+    userAgent: navigator.userAgent
+  };
+}
+
+/* ---------- Send ---------- */
+async function send(payload){
+  if (CONFIG.mode === "mock"){
+    await new Promise(r => setTimeout(r, 900));
+    return { ok:true, status:200, body:{ mock:true, message:"Mock mode – no data sent. Set CONFIG.mode to 'proxy' or 'direct'." } };
+  }
+  let url, headers = { "Content-Type":"application/json" };
+  if (CONFIG.mode === "proxy"){
+    url = CONFIG.proxyUrl;
+  } else {
+    const d = CONFIG.direct;
+    url = `${d.baseUrl}/api/businessunits/${d.businessUnitId}/applications/${d.applicationId}/dataevents/${d.dataEventId}/event`
+        + `?userKey=${encodeURIComponent(d.userKey)}&secret=${encodeURIComponent(d.secret)}`;
+  }
+  const res = await fetch(url, { method:"POST", headers, body:JSON.stringify(payload) });
+  const text = await res.text();
+  let body; try { body = JSON.parse(text); } catch { body = text; }
+  // CDP returns HTTP 200 with an errorCode on some failures – treat non-zero errorCode as an error
+  const apiOk = res.ok && !(body && typeof body === "object" && body.errorCode && body.errorCode !== 0);
+  return { ok:apiOk, status:res.status, body };
+}
+
+function endpointLabel(){
+  if (CONFIG.mode === "mock") return "none (mock)";
+  if (CONFIG.mode === "proxy") return CONFIG.proxyUrl;
+  const d = CONFIG.direct;
+  return `${d.baseUrl}/api/businessunits/${d.businessUnitId}/applications/${d.applicationId}/dataevents/${d.dataEventId}/event`;
+}
+function renderDevMeta(){
+  $("devMeta").innerHTML = `<span class="pill">mode: ${esc(CONFIG.mode)}</span><span class="pill">POST ${esc(endpointLabel())}</span>`;
+}
+renderDevMeta();
+
+$("enquiryForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  $("formMsg").textContent = ""; $("formMsg").className = "form-msg";
+  if (!validate()){ $("formMsg").textContent = "Please check the highlighted fields."; $("formMsg").classList.add("error"); return; }
+
+  const payload = buildPayload();
+  $("devRequest").textContent = JSON.stringify(payload, null, 2);
+  $("devResponse").textContent = "Sending…";
+  const btn = $("submitBtn"); btn.disabled = true; btn.classList.add("loading"); btn.querySelector(".label").textContent = "Submitting…";
+
+  try {
+    const r = await send(payload);
+    $("devResponse").textContent = `HTTP ${r.status}\n` + (typeof r.body === "string" ? r.body : JSON.stringify(r.body, null, 2));
+    if (!r.ok) throw new Error("API error");
+    $("successTitle").textContent = `Thank you, ${payload.firstName}!`;
+    $("successText").textContent = `We've received your enquiry for the ${payload.carModel} ${payload.variant} in ${payload.colorPreference}. A Ford Naghi sales advisor will call you on ${payload.mobile} shortly.`;
+    $("successCar").src = imgUrl(state.model); $("successCar").alt = payload.carModel;
+    $("successRef").textContent = payload.enquiryId;
+    $("formView").style.display = "none"; $("successView").style.display = "block";
+    $("enquiry").scrollIntoView({ behavior:"smooth" });
+  } catch (err) {
+    if ($("devResponse").textContent === "Sending…") $("devResponse").textContent = String(err);
+    $("formMsg").textContent = "Sorry, we couldn't submit your enquiry. Please try again.";
+    $("formMsg").classList.add("error");
+  } finally {
+    btn.disabled = false; btn.classList.remove("loading"); btn.querySelector(".label").textContent = "Submit enquiry";
+  }
+});
+
+$("newEnquiry").addEventListener("click", () => {
+  $("enquiryForm").reset();
+  state.model = state.color = state.budget = null;
+  $("variant").innerHTML = `<option value="">Choose a vehicle first</option>`; $("variant").disabled = true;
+  $("fuel").innerHTML = `<option value="">Choose a vehicle first</option>`; $("fuel").disabled = true;
+  $("swatches").innerHTML = `<span class="hint">Choose a vehicle to see available colours.</span>`;
+  document.querySelector('#cats button[data-cat="All"]').click();
+  updateSummary();
+  $("successView").style.display = "none"; $("formView").style.display = "block";
+});
+
+/* Demo view toggle (also opens automatically with ?debug=1) */
+function toggleDev(force){
+  const open = force ?? !$("devPanel").classList.contains("open");
+  $("devPanel").classList.toggle("open", open);
+  $("devToggle").setAttribute("aria-expanded", open);
+  $("devToggle").textContent = open ? "Hide API payload" : "Show API payload (demo view)";
+}
+$("devToggle").addEventListener("click", () => toggleDev());
+if (new URLSearchParams(location.search).get("debug") === "1") toggleDev(true);
+</script>
+</body>
+</html>
