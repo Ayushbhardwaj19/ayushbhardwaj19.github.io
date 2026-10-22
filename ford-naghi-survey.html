@@ -67,6 +67,11 @@ textarea{width:100%;min-height:120px;padding:16px;border:1px solid #b8c0d0;borde
 .thanks .sum b{color:var(--btn)}
 body.sent .intro,body.sent form{display:none}body.sent .thanks{display:block}
 
+.devbar{padding:0 var(--pad) 40px}
+.devtoggle{background:none;border:1px dashed #AEB8C6;border-radius:8px;padding:8px 12px;font:inherit;font-size:13px;color:var(--mute)}
+.devpanel{display:none;margin-top:12px;background:#0B1424;color:#D5DAE1;border-radius:12px;padding:18px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px}
+.devpanel.open{display:block}.devpanel h4{margin:0 0 8px;color:#fff;font:600 13px/1.2 sans-serif}
+.devpanel pre{margin:0 0 14px;background:#131C2C;border-radius:8px;padding:12px;overflow:auto;max-height:320px;white-space:pre-wrap;word-break:break-word}
 footer{background:var(--navy);color:#c9cdea;padding:40px var(--pad);font-size:14px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 footer a:hover{text-decoration:underline}
 
@@ -122,13 +127,34 @@ footer a:hover{text-decoration:underline}
  <a class="btn" href="#" style="display:inline-block">Back to Vehicles</a>
 </section>
 
+<div class="devbar">
+ <button class="devtoggle" id="devToggle" type="button" aria-expanded="false">Show API payload (demo view)</button>
+ <div class="devpanel" id="devPanel">
+  <h4>Request payload sent to SAP CDP</h4><pre id="devRequest">Submit the form to see the payload.</pre>
+  <h4>Response</h4><pre id="devResponse">-</pre>
+ </div>
+</div>
+
 <footer>
  <span>&copy; 2026 Mohamed Yousuf Naghi Motors Co. Demo replica for presentation purposes.</span>
  <span><a href="tel:920029700">Toll-free 920029700</a></span>
 </footer>
 
 <script>
-var ENDPOINT="https://cdp.eu5-prod.gigya.com/api/businessunits/4_mf-KakPgkW9F-FxDAa0OMg/applications/HJ2updLyeh-uxUdTfkHPSw/dataevents/HJ3VN_9TRA_XbgsIbPx6lg/event?userKey=ADAyXh7J0f3q&secret=hcuJE8WtDREwGt2HNzeX8HwYffP6R4TC";
+/* =====================================================================
+   CONFIG: how the survey reaches SAP CDP
+   mode "proxy"  - POST to proxyUrl (a server/Worker that holds the CDP key + secret and
+                   forwards to CDP). Recommended: no secret in the page, no CORS problem.
+                   "/api/survey" works when the page is served by the included server.js.
+                   For GitHub Pages use the full Cloudflare Worker URL instead.
+   mode "direct" - browser calls CDP itself. Sandbox only: secret is visible and CORS blocks it.
+   mode "mock"   - no network call, simulated success (for rehearsals).
+   ===================================================================== */
+var CONFIG={
+ mode:"proxy",
+ proxyUrl:"https://naghi-survey.ayushbhardwaj1901.workers.dev/",
+ directUrl:"PASTE_FULL_CDP_EVENT_URL_HERE"
+};
 var SURVEY_ID="FORD-NAGHI-RANGER-2026",SURVEY_NAME="2026 Ford Ranger Purchase Feedback";
 var QUESTIONS=[
  {id:"overall",csat:true,t:"Overall, how satisfied are you with your 2026 Ford Ranger purchase?",h:"Think about the whole experience from first visit to delivery.",lo:"Very dissatisfied",hi:"Extremely satisfied",s:"Overall satisfaction (CSAT)"},
@@ -173,6 +199,17 @@ document.querySelectorAll("input[type=range]").forEach(function(r){
 
 if(EMAIL_RE.test(urlEmail))$("#email").value=urlEmail;   /* prefill from ?email= if present */
 
+function send(body){
+ if(CONFIG.mode==="mock")return new Promise(function(r){setTimeout(function(){r({ok:true,status:200,body:{mock:true}})},800)});
+ var url=CONFIG.mode==="direct"?CONFIG.directUrl:CONFIG.proxyUrl;
+ return fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
+ .then(function(res){return res.text().then(function(t){
+  var b;try{b=JSON.parse(t)}catch(e){b=t}
+  /* CDP can answer HTTP 200 with a non-zero errorCode, so treat that as a failure too */
+  var ok=res.ok&&!(b&&typeof b==="object"&&b.errorCode&&b.errorCode!==0);
+  return {ok:ok,status:res.status,body:b};
+ })});
+}
 function category(n){return n>=9?"Promoter":n>=7?"Passive":"Detractor"}
 $("#survey").addEventListener("submit",function(e){
  e.preventDefault();
@@ -194,20 +231,26 @@ $("#survey").addEventListener("submit",function(e){
  QUESTIONS.forEach(function(q,i){body["Question"+(i+1)]=q.t;body["Answer"+(i+1)]=String(ans[q.id])});
  var btn=$("#submit");btn.disabled=true;btn.textContent="Submitting...";$("#err").textContent="";
  console.log("[survey] POST payload",body);
- fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
- .then(function(res){
-  if(!res.ok)throw new Error("HTTP "+res.status);
+ $("#devRequest").textContent=JSON.stringify(body,null,2);$("#devResponse").textContent="Sending...";
+ send(body)
+ .then(function(r){
+  $("#devResponse").textContent="HTTP "+r.status+"\n"+(typeof r.body==="string"?r.body:JSON.stringify(r.body,null,2));
+  if(!r.ok)throw new Error("CDP/API error (HTTP "+r.status+")");
   track("survey_submit",{email:email,nps:nps,npsCategory:category(nps),csat:csat,comment:$("#comment").value.trim()});
   $("#sum").innerHTML=QUESTIONS.map(function(q){return "<div><span>"+q.s+"</span><b>"+ans[q.id]+" / 10</b></div>"}).join("")+"<div><span>Likelihood to recommend</span><b>"+nps+" / 10 &middot; "+category(nps)+"</b></div>";
   document.body.classList.add("sent");window.scrollTo({top:0,behavior:"smooth"});
  })
  .catch(function(err){
   console.error("[survey] submit failed",err);
+  if($("#devResponse").textContent==="Sending...")$("#devResponse").textContent=String(err);
   track("survey_submit_failed",{reason:String(err)});
   btn.disabled=false;btn.textContent="Submit feedback";
   $("#err").textContent="We could not save your response. Please check your connection and try again.";
  });
 });
+function toggleDev(f){var o=f===undefined?!$("#devPanel").classList.contains("open"):f;$("#devPanel").classList.toggle("open",o);$("#devToggle").setAttribute("aria-expanded",o);$("#devToggle").textContent=o?"Hide API payload":"Show API payload (demo view)"}
+$("#devToggle").onclick=function(){toggleDev()};
+if(params.get("debug")==="1")toggleDev(true);
 $("#burger").onclick=function(){$("#nav").classList.toggle("open")};
 $("#carImg").onerror=function(){this.style.display="none"};
 track("page_view",{page:"survey"});
