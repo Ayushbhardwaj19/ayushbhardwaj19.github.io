@@ -56,6 +56,8 @@ textarea{width:100%;min-height:120px;padding:16px;border:1px solid #b8c0d0;borde
 .btn:disabled{background:#a9a9a9;cursor:not-allowed;filter:none}
 .err{color:#b3261e;font-size:15px;min-height:1.2em}
 
+ .em{margin-bottom:26px}.em label{display:block;font-size:17px;margin-bottom:8px}
+.em input{width:100%;max-width:460px;padding:15px 18px;border:1px solid #b8c0d0;border-radius:999px;font:inherit;font-size:17px;color:var(--ink)}
 .thanks{display:none;text-align:center;padding:80px var(--pad) 110px}
 .thanks .ck{width:84px;height:84px;border-radius:50%;background:var(--btn);margin:0 auto 26px;display:grid;place-items:center}
 .thanks h1{font-size:clamp(34px,4.2vw,54px);font-weight:400;margin-bottom:14px}
@@ -95,13 +97,14 @@ footer a:hover{text-decoration:underline}
 
 <section class="intro">
  <div>
-  <h1>How is your 2026 Mustang?</h1>
+  <h1>How is your 2026 Ranger?</h1>
   <p>Thank you for choosing Ford. Tell us about your purchase in under two minutes. Your feedback helps Naghi Motors improve every visit.</p>
  </div>
- <div class="car"><img id="carImg" referrerpolicy="no-referrer" alt="2026 Ford Mustang" src="https://cdn.alnaghicms.com/storage/ford_common/car-data/side-images/new-mustang.webp"></div>
+ <div class="car"><img id="carImg" referrerpolicy="no-referrer" alt="2026 Ford Ranger" src="https://cdn-s3.autocarindia.com/legacy/cdni/ExtraImages/20211124043236_2022ford_nextgenranger_wildtrak_front3qtr_static3.jpg?w=728&q=75&fm=auto"></div>
 </section>
 
 <form id="survey" novalidate>
+ <div class="em" id="emWrap"><label for="email">Your email address</label><input type="email" id="email" placeholder="name@example.com" autocomplete="email" required></div>
  <div class="progress"><span id="pTxt">0 of 5 answered</span><div class="bar"><i id="pBar"></i></div></div>
  <div id="qs"></div>
  <div class="cm">
@@ -114,7 +117,7 @@ footer a:hover{text-decoration:underline}
 <section class="thanks" id="thanks">
  <div class="ck"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
  <h1>Thank you for your feedback</h1>
- <p>We have received your answers about your 2026 Ford Mustang. A member of the Naghi Motors team may contact you if you asked us to follow up.</p>
+ <p>We have received your answers about your 2026 Ford Ranger. A member of the Naghi Motors team may contact you if you asked us to follow up.</p>
  <div class="sum" id="sum"></div><br>
  <a class="btn" href="#" style="display:inline-block">Back to Vehicles</a>
 </section>
@@ -125,13 +128,19 @@ footer a:hover{text-decoration:underline}
 </footer>
 
 <script>
+var ENDPOINT="https://cdp.eu5-prod.gigya.com/api/businessunits/4_mf-KakPgkW9F-FxDAa0OMg/applications/HJ2updLyeh-uxUdTfkHPSw/dataevents/HJ3VN_9TRA_XbgsIbPx6lg/event?userKey=ADAyXh7J0f3q&secret=hcuJE8WtDREwGt2HNzeX8HwYffP6R4TC";
+var SURVEY_ID="FORD-NAGHI-RANGER-2026",SURVEY_NAME="2026 Ford Ranger Purchase Feedback";
 var QUESTIONS=[
- {id:"overall",t:"Overall, how satisfied are you with your 2026 Ford Mustang purchase?",h:"Think about the whole experience from first visit to delivery.",lo:"Very dissatisfied",hi:"Extremely satisfied",s:"Overall satisfaction"},
- {id:"sales",t:"How would you rate the service you received from our sales team?",h:"Product knowledge, friendliness and how well we answered your questions.",lo:"Poor",hi:"Excellent",s:"Sales experience"},
- {id:"drive",t:"How would you rate the performance and driving experience of your Mustang?",h:"Power, handling, braking and ride comfort.",lo:"Poor",hi:"Outstanding",s:"Driving experience"},
+ {id:"overall",csat:true,t:"Overall, how satisfied are you with your 2026 Ford Ranger purchase?",h:"Think about the whole experience from first visit to delivery.",lo:"Very dissatisfied",hi:"Extremely satisfied",s:"Overall satisfaction (CSAT)"},
+ {id:"recoDealer",nps:true,t:"How likely are you to recommend Naghi Motors to a friend or colleague?",h:"Based on your experience with our showroom and sales team.",lo:"Not at all likely",hi:"Extremely likely",s:"Recommend Naghi Motors"},
+ {id:"drive",t:"How would you rate the performance and driving experience of your Ranger?",h:"Power, towing, off-road capability and ride comfort.",lo:"Poor",hi:"Outstanding",s:"Driving experience"},
  {id:"design",t:"How do you rate the design, interior quality and technology?",h:"Styling, cabin materials, screen and connectivity features.",lo:"Poor",hi:"Excellent",s:"Design and technology"},
- {id:"value",t:"How would you rate the value for money of your purchase?",h:"Price, financing options and what you received for it.",lo:"Poor value",hi:"Great value",s:"Value for money"}
+ {id:"recoCar",nps:true,t:"How likely are you to recommend the 2026 Ford Ranger to a friend or colleague?",h:"Based on everything you have experienced with the car so far.",lo:"Not at all likely",hi:"Extremely likely",s:"Recommend the Ranger"}
 ];
+var params=new URLSearchParams(location.search);
+var urlEmail=(params.get("email")||params.get("Email")||"").trim();
+var EMAIL_RE=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+var startedAt=new Date().toISOString();
 var ans={};
 var $=function(s){return document.querySelector(s)};
 function track(n,d){d=d||{};console.log("[demo-event]",n,d);document.dispatchEvent(new CustomEvent("demo:event",{detail:{name:n,data:d}}))}
@@ -152,7 +161,7 @@ function answer(r){
  var n=Object.keys(ans).length;
  $("#pTxt").textContent=n+" of "+QUESTIONS.length+" answered";$("#pBar").style.width=(n/QUESTIONS.length*100)+"%";
  $("#err").textContent="";
- if(first&&n===1)track("survey_start",{vehicle:"2026 Ford Mustang"});
+ if(first&&n===1)track("survey_start",{vehicle:"2026 Ford Ranger"});
  track("survey_answer",{question:id,score:ans[id]});
 }
 document.querySelectorAll("input[type=range]").forEach(function(r){
@@ -162,19 +171,42 @@ document.querySelectorAll("input[type=range]").forEach(function(r){
  r.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){if(!(r.dataset.id in ans))answer(r)}});
 });
 
+if(EMAIL_RE.test(urlEmail))$("#email").value=urlEmail;   /* prefill from ?email= if present */
+
+function category(n){return n>=9?"Promoter":n>=7?"Passive":"Detractor"}
 $("#survey").addEventListener("submit",function(e){
  e.preventDefault();
+ var email=$("#email").value.trim();
+ if(!EMAIL_RE.test(email)){$("#err").textContent="Please enter a valid email address.";$("#email").focus();return}
  var missing=QUESTIONS.filter(function(q){return !(q.id in ans)});
  if(missing.length){
   $("#err").textContent="Please answer all "+QUESTIONS.length+" rating questions ("+missing.length+" left).";
   $("#q_"+missing[0].id).scrollIntoView({behavior:"smooth",block:"center"});return;
  }
- var vals=QUESTIONS.map(function(q){return ans[q.id]});
- var avg=Math.round(vals.reduce(function(a,b){return a+b},0)/vals.length*10)/10;
- var payload={vehicle:"2026 Ford Mustang",answers:ans,average:avg,comment:$("#comment").value.trim()};
- track("survey_submit",payload);
- $("#sum").innerHTML=QUESTIONS.map(function(q){return "<div><span>"+q.s+"</span><b>"+ans[q.id]+" / 10</b></div>"}).join("")+"<div><span>Average</span><b>"+avg+" / 10</b></div>";
- document.body.classList.add("sent");window.scrollTo({top:0,behavior:"smooth"});
+ var npsQs=QUESTIONS.filter(function(q){return q.nps});
+ var nps=Math.round(npsQs.reduce(function(a,q){return a+ans[q.id]},0)/npsQs.length*10)/10;
+ var csat=ans[QUESTIONS.filter(function(q){return q.csat})[0].id];
+ var body={
+  SurveyID:SURVEY_ID,Email:email,NPS:String(nps),CSAT:String(csat),
+  timestamp:startedAt,entryPoint:params.get("entryPoint")||"Website - Survey Page",
+  SurveyName:SURVEY_NAME,Channel:params.get("channel")||"Web",responseTimestamp:new Date().toISOString()
+ };
+ QUESTIONS.forEach(function(q,i){body["Question"+(i+1)]=q.t;body["Answer"+(i+1)]=String(ans[q.id])});
+ var btn=$("#submit");btn.disabled=true;btn.textContent="Submitting...";$("#err").textContent="";
+ console.log("[survey] POST payload",body);
+ fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
+ .then(function(res){
+  if(!res.ok)throw new Error("HTTP "+res.status);
+  track("survey_submit",{email:email,nps:nps,npsCategory:category(nps),csat:csat,comment:$("#comment").value.trim()});
+  $("#sum").innerHTML=QUESTIONS.map(function(q){return "<div><span>"+q.s+"</span><b>"+ans[q.id]+" / 10</b></div>"}).join("")+"<div><span>Likelihood to recommend</span><b>"+nps+" / 10 &middot; "+category(nps)+"</b></div>";
+  document.body.classList.add("sent");window.scrollTo({top:0,behavior:"smooth"});
+ })
+ .catch(function(err){
+  console.error("[survey] submit failed",err);
+  track("survey_submit_failed",{reason:String(err)});
+  btn.disabled=false;btn.textContent="Submit feedback";
+  $("#err").textContent="We could not save your response. Please check your connection and try again.";
+ });
 });
 $("#burger").onclick=function(){$("#nav").classList.toggle("open")};
 $("#carImg").onerror=function(){this.style.display="none"};
