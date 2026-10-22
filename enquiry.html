@@ -360,30 +360,18 @@ footer .inner{max-width:1200px;margin:0 auto;padding:26px 20px;display:flex;just
 
 <script>
 /* =====================================================================
-   CONFIG – edit this block to connect the page to SAP CDP
+   CONFIG - how the enquiry form reaches SAP CDP
    ---------------------------------------------------------------------
    mode:
-     "mock"   – no network call; shows the payload and a simulated success.
-                Use for rehearsals or when the API is unavailable.
-     "proxy"  – POSTs the payload to proxyUrl (e.g. the included server.js),
-                which adds credentials and forwards it to SAP CDP.
-                Recommended: keeps your userKey/secret off the browser.
-     "direct" – POSTs straight to the CDP Ingestion API from the browser.
-                Only for a sandbox: credentials are visible in the page,
-                and CORS may block the call.
+     "proxy" - POSTs the payload to proxyUrl: a Cloudflare Worker that holds the
+               CDP userKey/secret, forwards the request to SAP CDP and adds the CORS
+               headers the browser needs. No secret lives in this page.
+     "mock"  - no network call; shows the payload and a simulated success.
+               Use for rehearsals or when the API is unavailable.
    ===================================================================== */
 const CONFIG = {
   mode: "proxy",
-  proxyUrl: "/api/enquiry",
-  direct: {
-    // e.g. https://cdp.eu5-prod.gigya.com  (check your tenant's data centre)
-    baseUrl: "https://cdp.<DATACENTER>.gigya.com",
-    businessUnitId: "<BUSINESS_UNIT_ID>",
-    applicationId: "<APPLICATION_ID>",
-    dataEventId: "<DATA_EVENT_ID>",
-    userKey: "<USER_KEY>",
-    secret: "<SECRET>"
-  },
+  proxyUrl: "https://naghi-enquiry.ayushbhardwaj1901.workers.dev/",   // your Cloudflare Worker URL
   source: "Ford Naghi Website Enquiry Form",
   brand: "Ford"
 };
@@ -575,17 +563,9 @@ function buildPayload(){
 async function send(payload){
   if (CONFIG.mode === "mock"){
     await new Promise(r => setTimeout(r, 900));
-    return { ok:true, status:200, body:{ mock:true, message:"Mock mode – no data sent. Set CONFIG.mode to 'proxy' or 'direct'." } };
+    return { ok:true, status:200, body:{ mock:true, message:"Mock mode – no data sent. Set CONFIG.mode to 'proxy' to send to SAP CDP." } };
   }
-  let url, headers = { "Content-Type":"application/json" };
-  if (CONFIG.mode === "proxy"){
-    url = CONFIG.proxyUrl;
-  } else {
-    const d = CONFIG.direct;
-    url = `${d.baseUrl}/api/businessunits/${d.businessUnitId}/applications/${d.applicationId}/dataevents/${d.dataEventId}/event`
-        + `?userKey=${encodeURIComponent(d.userKey)}&secret=${encodeURIComponent(d.secret)}`;
-  }
-  const res = await fetch(url, { method:"POST", headers, body:JSON.stringify(payload) });
+  const res = await fetch(CONFIG.proxyUrl, { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(payload) });
   const text = await res.text();
   let body; try { body = JSON.parse(text); } catch { body = text; }
   // CDP returns HTTP 200 with an errorCode on some failures – treat non-zero errorCode as an error
@@ -594,10 +574,7 @@ async function send(payload){
 }
 
 function endpointLabel(){
-  if (CONFIG.mode === "mock") return "none (mock)";
-  if (CONFIG.mode === "proxy") return CONFIG.proxyUrl;
-  const d = CONFIG.direct;
-  return `${d.baseUrl}/api/businessunits/${d.businessUnitId}/applications/${d.applicationId}/dataevents/${d.dataEventId}/event`;
+  return CONFIG.mode === "mock" ? "none (mock)" : CONFIG.proxyUrl;
 }
 function renderDevMeta(){
   $("devMeta").innerHTML = `<span class="pill">mode: ${esc(CONFIG.mode)}</span><span class="pill">POST ${esc(endpointLabel())}</span>`;
