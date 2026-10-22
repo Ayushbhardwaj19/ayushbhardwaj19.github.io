@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ford Naghi KSA – Book a Service Appointment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   Ford Naghi KSA – Demo service booking page (SAP CDP proof of concept)
+   Not an official Ford or Mohamed Yousuf Naghi Motors website.
+   Vehicle images are loaded from the Ford Naghi CDN (cdn.alnaghicms.com).
+   Sends service appointment data to SAP Customer Data Platform via the Ingestion API.
+   Configure the integration in the CONFIG block in the <script> below.
+   ===================================================================== */
+:root{
+  --ink:#0B1424; --ink-2:#3B4658; --muted:#6B7484; --line:#DEE3EA;
+  --bg:#F3F5F8; --card:#FFFFFF; --accent:#066FEF; --accent-dark:#0052C2;
+  --ford:#00095B; --ford-2:#102B4E;
+  --ok:#12805C; --err:#C42B1C;
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.display{font-family:"Inter Tight",Inter,sans-serif}
+
+/* ---------- Header ---------- */
+.topbar{background:#000640;color:#C9D3E6;font-size:12.5px}
+.topbar .inner{max-width:1200px;margin:0 auto;padding:7px 20px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header.nav{position:sticky;top:0;z-index:10;background:var(--ford);border-bottom:1px solid rgba(255,255,255,.12)}
+.nav-inner{max-width:1200px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brandmarks{display:flex;align-items:center;gap:16px}
+.brandmarks img.ford{height:34px;width:auto}
+.brandmarks .sep{width:1px;height:30px;background:rgba(255,255,255,.3)}
+.brandmarks img.naghi{height:30px;width:auto}
+.nav-links{display:flex;gap:26px;font-size:14px;font-weight:500;color:#C9D3E6}
+.nav-links a{text-decoration:none}.nav-links a:hover{color:#fff}
+.nav-cta{background:#fff;color:var(--ford);border:0;border-radius:999px;padding:9px 18px;font-weight:600;font-size:14px;text-decoration:none;white-space:nowrap}
+.nav-cta:hover{background:var(--accent);color:#fff}
+@media (max-width:900px){.nav-links{display:none}}
+@media (max-width:480px){.nav-inner{padding:10px 16px;gap:10px}.brandmarks{gap:10px;min-width:0}.brandmarks img.ford{height:22px}.brandmarks img.naghi{height:18px;max-width:150px}.nav-cta{padding:7px 12px;font-size:12.5px}.topbar .inner span:last-child{display:none}}
+
+/* ---------- Hero ---------- */
+.hero{background:radial-gradient(900px 420px at 85% 0%,#E3ECFA 0%,transparent 65%),linear-gradient(180deg,#FFFFFF,#EEF2F7);overflow:hidden;border-bottom:1px solid var(--line)}
+.hero-inner{max-width:1200px;margin:0 auto;padding:48px 20px 120px;display:grid;grid-template-columns:1fr 1.1fr;gap:30px;align-items:center}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--accent)}
+.hero h1{font-size:clamp(34px,5vw,54px);line-height:1.04;margin:0 0 16px;letter-spacing:-.02em;color:var(--ford)}
+.hero p.lead{color:var(--ink-2);font-size:17px;max-width:500px;margin:0 0 26px}
+.hero-stats{display:flex;gap:30px;flex-wrap:wrap}
+.hero-stats div{font-size:13px;color:var(--muted)}
+.hero-stats b{display:block;font-family:"Inter Tight",sans-serif;font-size:24px;color:var(--ford)}
+.hero-visual{position:relative;min-height:260px}
+.hero-car{width:100%;max-width:640px;display:block;margin-left:auto;mix-blend-mode:multiply;transition:opacity .4s}
+.hero-tabs{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:10px}
+.hero-tabs button{font:inherit;font-size:12.5px;font-weight:600;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;cursor:pointer;color:var(--ink-2)}
+.hero-tabs button[aria-pressed="true"]{background:var(--ford);border-color:var(--ford);color:#fff}
+@media (max-width:900px){.hero-inner{grid-template-columns:minmax(0,1fr);padding:32px 16px 110px}.hero-tabs{justify-content:flex-start}.hero-stats b{font-size:20px}}
+
+/* ---------- Form card ---------- */
+.form-wrap{max-width:1200px;margin:-80px auto 0;padding:0 20px 60px;position:relative}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:0 20px 50px rgba(0,9,91,.10),0 2px 6px rgba(0,9,91,.05);padding:34px}
+@media (max-width:600px){.card{padding:22px 16px}}
+.card-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.card-head h2{font-size:28px;margin:0;color:var(--ford)}
+.card-head p{margin:4px 0 0;color:var(--muted)}
+.steps{display:flex;gap:8px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.steps span{padding:5px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+
+fieldset{border:0;margin:0 0 28px;padding:0;min-width:0}
+legend{font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+legend .num{width:24px;height:24px;border-radius:50%;background:var(--ford);color:#fff;display:inline-grid;place-items:center;font-size:12px;letter-spacing:0}
+
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 18px}
+@media (max-width:640px){.grid{grid-template-columns:1fr}}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--ink-2)}
+.field label .req{color:var(--accent)}
+.field input,.field select{width:100%;font:inherit;font-size:15px;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);transition:border-color .15s,box-shadow .15s}
+.field input:focus,.field select:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px rgba(6,111,239,.14)}
+.field .err{display:none;color:var(--err);font-size:12.5px;margin-top:5px}
+.field.invalid input,.field.invalid select{border-color:var(--err)}
+.field.invalid .err{display:block}
+.phone{display:flex}
+.phone .cc{display:grid;place-items:center;padding:0 12px;border:1.5px solid var(--line);border-right:0;border-radius:10px 0 0 10px;background:var(--bg);font-weight:600;color:var(--ink-2)}
+.phone input{border-radius:0 10px 10px 0}
+
+.model,.swatch,.chip{position:relative}
+/* Category filter */
+.cats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.cats button{font:inherit;font-size:13px;font-weight:600;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;cursor:pointer;color:var(--ink-2)}
+.cats button[aria-pressed="true"]{border-color:var(--ford);background:var(--ford);color:#fff}
+/* Car model cards */
+.models{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:1000px){.models{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:560px){.models{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.model input{position:absolute;opacity:0;pointer-events:none}
+.model label{display:block;cursor:pointer;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px 14px;transition:all .15s;height:100%;background:#fff}
+.model label:hover{border-color:#AEB8C6}
+.model input:checked + label{border-color:var(--accent);box-shadow:0 0 0 3px rgba(6,111,239,.15)}
+.model input:focus-visible + label{outline:2px solid var(--ford);outline-offset:2px}
+.model .pic{margin-bottom:6px}
+.model .pic img{display:block;width:100%;aspect-ratio:268/196;object-fit:contain;mix-blend-mode:multiply}
+.model .myear{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--accent)}
+.model .mname{font-weight:700;font-size:15px;color:var(--ford)}
+.model .mtype{font-size:12px;color:var(--muted)}
+.model[hidden]{display:none}
+
+/* Colour swatches */
+.swatches{display:flex;flex-wrap:wrap;gap:12px;min-height:44px;align-items:center}
+.swatch input{position:absolute;opacity:0;pointer-events:none}
+.swatch label{display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 12px 6px 6px;border:1.5px solid var(--line);border-radius:999px;font-size:13px;font-weight:500;background:#fff}
+.swatch .dot{width:26px;height:26px;border-radius:50%;border:1px solid rgba(0,0,0,.15);box-shadow:inset 0 -4px 8px rgba(0,0,0,.15)}
+.swatch input:checked + label{border-color:var(--ford);box-shadow:0 0 0 3px rgba(0,9,91,.12)}
+.swatch input:focus-visible + label{outline:2px solid var(--ford);outline-offset:2px}
+.hint{color:var(--muted);font-size:13px}
+
+/* Budget chips */
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip label{display:block;cursor:pointer;padding:10px 16px;border:1.5px solid var(--line);border-radius:10px;font-size:14px;font-weight:500;background:#fff}
+.chip input:checked + label{background:var(--ford);border-color:var(--ford);color:#fff}
+.chip input:focus-visible + label{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Consent + submit */
+.consent{display:grid;gap:10px;margin-bottom:22px}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--ink-2)}
+.check input{margin-top:3px;width:17px;height:17px;accent-color:var(--accent);flex:none}
+.check.invalid{color:var(--err)}
+.actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+button.submit{background:var(--ford);color:#fff;border:0;border-radius:999px;padding:15px 32px;font:inherit;font-weight:700;font-size:16px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;transition:background .15s}
+button.submit:hover{background:var(--accent)}
+button.submit:disabled{opacity:.6;cursor:progress}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:none}
+button.submit.loading .spinner{display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.form-msg{font-size:14px;font-weight:500}
+.form-msg.error{color:var(--err)}
+
+/* Summary sidebar */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:34px}
+@media (max-width:1000px){.layout{grid-template-columns:1fr}}
+.summary{background:var(--bg);border-radius:12px;padding:20px;align-self:start;position:sticky;top:84px}
+.summary h3{margin:0 0 12px;font-size:15px;color:var(--ford)}
+.summary dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:8px 12px;font-size:13.5px}
+.summary dt{color:var(--muted)}
+.summary dd{margin:0;font-weight:600;text-align:right;overflow-wrap:anywhere}
+.summary .preview{min-height:120px;margin:0 0 12px;display:grid;place-items:center;border-radius:10px;background:#fff;overflow:hidden}
+.summary .preview img{display:block;width:100%;aspect-ratio:268/196;object-fit:contain}
+.summary .preview .ph{color:var(--muted);font-size:12.5px}
+.summary .note{font-size:12px;color:var(--muted);margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+
+/* Success */
+.success{display:none;text-align:center;padding:30px 10px}
+.success .tick{width:64px;height:64px;border-radius:50%;background:#E7F5EF;color:var(--ok);display:grid;place-items:center;margin:0 auto 16px}
+.success h2{margin:0 0 8px;color:var(--ford)}
+.success p{color:var(--muted);margin:0 auto 6px;max-width:540px}
+.success img{max-width:360px;width:100%;margin:6px auto 0;display:block}
+.success .ref{display:inline-block;margin:12px 0 20px;padding:8px 14px;border-radius:8px;background:var(--bg);font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px}
+.btn-ghost{background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:11px 22px;font:inherit;font-weight:600;cursor:pointer}
+
+/* Developer / API panel (for demos) */
+.devbar{max-width:1200px;margin:0 auto;padding:0 20px 40px}
+.devtoggle{background:none;border:1px dashed #AEB8C6;border-radius:8px;padding:8px 12px;font:inherit;font-size:12.5px;color:var(--muted);cursor:pointer}
+.devpanel{display:none;margin-top:12px;background:#0B1424;color:#D5DAE1;border-radius:12px;padding:18px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px}
+.devpanel.open{display:block}
+.devpanel h4{margin:0 0 8px;color:#fff;font-family:Inter,sans-serif;font-size:13px}
+.devpanel .row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.devpanel .pill{background:#1C2638;border-radius:6px;padding:3px 8px}
+.devpanel pre{margin:0 0 14px;background:#131C2C;border-radius:8px;padding:12px;overflow:auto;max-height:340px;white-space:pre-wrap;word-break:break-word}
+
+footer{background:var(--ford);color:#AFBAD0;font-size:13px}
+footer .inner{max-width:1200px;margin:0 auto;padding:26px 20px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.hide{display:none!important}
+.field textarea{width:100%;font:inherit;font-size:15px;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);resize:vertical;transition:border-color .15s,box-shadow .15s}
+.field textarea:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px rgba(6,111,239,.14)}
+.field.invalid .chips,.field.invalid textarea{outline:0}
+.field.invalid .chip label{border-color:var(--err)}
+.hero-car{max-width:560px}
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="inner"><span>Mohamed Yousuf Naghi Motors · Authorised Ford distributor, Western &amp; Southern regions</span><span>Jeddah · Makkah · Madinah · Taif · Abha · Khamis Mushait · Jazan</span></div></div>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brandmarks">
+      <img class="ford" src="https://cdn.alnaghicms.com/storage/ford_common/new-logo/refreshed/ford-logo-new.svg" alt="Ford">
+      <span class="sep" aria-hidden="true"></span>
+      <img class="naghi" src="https://cdn.alnaghicms.com/storage/ford_common/new-logo/refreshed/naghi-logo-new.svg" alt="Mohamed Yousuf Naghi Motors">
+    </div>
+    <nav class="nav-links" aria-label="Main">
+      <a href="#">Vehicles</a><a href="#">Latest Offers</a><a href="#">Service</a><a href="#">Showrooms</a>
+    </nav>
+    <a class="nav-cta" href="#booking">Book Service</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <span class="eyebrow">Ford Naghi · Service</span>
+      <h1 class="display">Keep your 2026 Mustang in peak condition.</h1>
+      <p class="lead">Choose your service, pick a centre and a time that suits you, and book your appointment online in a couple of minutes.</p>
+      <div class="hero-stats">
+        <div><b>7</b>service cities</div>
+        <div><b>Genuine</b>Ford parts</div>
+        <div><b>Online</b>booking</div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <img class="hero-car" alt="2026 Ford Mustang" src="https://cdn.alnaghicms.com/storage/ford_common/car-data/side-images/new-mustang.webp">
+    </div>
+  </div>
+</section>
+
+<main class="form-wrap" id="booking">
+  <div class="card">
+    <div id="formView">
+      <div class="card-head">
+        <div>
+          <h2 class="display">Book your Mustang service</h2>
+          <p>Takes about two minutes. Fields marked <span style="color:var(--accent)">*</span> are required.</p>
+        </div>
+        <div class="steps"><span>1 · You</span><span>2 · Vehicle</span><span>3 · Service</span><span>4 · Slot</span></div>
+      </div>
+      <div class="layout">
+        <form id="serviceForm" novalidate>
+          <fieldset>
+            <legend><span class="num">1</span>Your details</legend>
+            <div class="grid">
+              <div class="field"><label for="firstName">First name <span class="req">*</span></label><input id="firstName" autocomplete="given-name" maxlength="50"><div class="err">Please enter your first name.</div></div>
+              <div class="field"><label for="lastName">Last name <span class="req">*</span></label><input id="lastName" autocomplete="family-name" maxlength="50"><div class="err">Please enter your last name.</div></div>
+              <div class="field"><label for="email">Email <span class="req">*</span></label><input id="email" type="email" autocomplete="email" maxlength="120"><div class="err">Please enter a valid email address.</div></div>
+              <div class="field"><label for="mobile">Mobile number <span class="req">*</span></label><div class="phone"><span class="cc">+966</span><input id="mobile" type="tel" inputmode="numeric" maxlength="9" placeholder="5X XXX XXXX"></div><div class="err">Please enter a valid Saudi mobile number (9 digits starting with 5).</div></div>
+              <div class="field"><label for="customerId">Ford Naghi customer ID <span class="hint">(optional)</span></label><input id="customerId" maxlength="40"></div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend><span class="num">2</span>Your 2026 Mustang</legend>
+            <div class="grid">
+              <div class="field"><label for="vin">VIN (17 characters) <span class="req">*</span></label><input id="vin" maxlength="17" placeholder="e.g. 1FA6P8TH0N5100001" autocapitalize="characters"><div class="err">Please enter a valid 17-character VIN (no I, O or Q).</div></div>
+              <div class="field"><label for="reg">Registration number <span class="req">*</span></label><input id="reg" maxlength="12" placeholder="e.g. ABC 1234" autocapitalize="characters"><div class="err">Please enter your registration number.</div></div>
+              <div class="field"><label for="odo">Odometer (km) <span class="req">*</span></label><input id="odo" type="number" inputmode="numeric" min="0" max="999999" placeholder="e.g. 12500"><div class="err">Please enter the current odometer reading.</div></div>
+              <div class="field"><label for="warranty">Under Ford warranty? <span class="req">*</span></label><select id="warranty"><option value="">Select</option><option value="yes">Yes</option><option value="no">No</option></select><div class="err">Please select an option.</div></div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend><span class="num">3</span>Service needed</legend>
+            <div class="field" id="svcField"><label>Service type <span class="req">*</span></label><div class="chips" id="svcTypes" role="radiogroup" aria-label="Service type"></div><div class="err">Please choose a service type.</div></div>
+            <div class="grid" style="margin-top:16px">
+              <div class="field hide" id="intervalField"><label for="interval">Service interval <span class="req">*</span></label><select id="interval"></select><div class="err">Please choose the interval due.</div></div>
+              <div class="field hide" id="recallField"><label for="recall">Recall / campaign code <span class="hint">(optional)</span></label><input id="recall" maxlength="30"></div>
+            </div>
+            <div class="field" style="margin-top:16px"><label>Additional jobs <span class="hint">(optional)</span></label><div class="chips" id="jobs"></div></div>
+            <div class="field" style="margin-top:16px"><label for="comments">Comments for the service team <span class="hint">(optional)</span></label><textarea id="comments" maxlength="500" rows="3" placeholder="Anything we should know, e.g. noises, warning lights"></textarea></div>
+          </fieldset>
+
+          <fieldset>
+            <legend><span class="num">4</span>Appointment</legend>
+            <div class="grid">
+              <div class="field" id="centerField"><label for="center">Service centre <span class="req">*</span></label><select id="center"></select><div class="err">Please choose a service centre.</div></div>
+              <div class="field"><label for="advisor">Preferred advisor <span class="hint">(optional)</span></label><select id="advisor" disabled><option value="">Choose a centre first</option></select></div>
+              <div class="field" id="dateField"><label for="date">Preferred date <span class="req">*</span></label><input id="date" type="date"><div class="err">Please choose a valid date.</div></div>
+            </div>
+            <div class="field" id="slotField" style="margin-top:16px"><label>Preferred time <span class="req">*</span></label><div class="chips" id="slots" role="radiogroup" aria-label="Time"></div><div class="err">Please choose a time.</div></div>
+            <div class="field" id="convField" style="margin-top:16px"><label>While we service your car <span class="req">*</span></label><div class="chips" id="conv" role="radiogroup" aria-label="Convenience"></div><div class="err">Please choose an option.</div></div>
+          </fieldset>
+
+          <div class="consent">
+            <label class="check" id="privacyCheck"><input type="checkbox" id="privacyConsent"> <span>I agree to the <a href="#">Privacy Policy</a> and allow Mohamed Yousuf Naghi Motors to contact me about this appointment. <span style="color:var(--accent)">*</span></span></label>
+          </div>
+          <div class="actions">
+            <button class="submit" type="submit" id="submitBtn"><span class="spinner"></span><span class="label">Book appointment</span></button>
+            <span class="form-msg" id="formMsg" role="status" aria-live="polite"></span>
+          </div>
+        </form>
+
+        <aside class="summary" aria-label="Your booking">
+          <h3>Your booking</h3>
+          <div class="preview"><img src="https://cdn.alnaghicms.com/storage/ford_common/car-data/side-images/new-mustang.webp" alt="2026 Ford Mustang"></div>
+          <dl>
+            <dt>Vehicle</dt><dd>2026 Ford Mustang</dd>
+            <dt>Service</dt><dd id="sumSvc">–</dd>
+            <dt>Date</dt><dd id="sumDate">–</dd>
+            <dt>Time</dt><dd id="sumTime">–</dd>
+            <dt>Centre</dt><dd id="sumCenter">–</dd>
+            <dt>Estimate</dt><dd id="sumEst">–</dd>
+          </dl>
+          <div class="note">The estimate is indicative. Your service advisor confirms the final price after inspection.</div>
+        </aside>
+      </div>
+    </div>
+
+    <div class="success" id="successView" role="status" aria-live="polite">
+      <div class="tick"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></div>
+      <h2 class="display" id="successTitle">Appointment booked!</h2>
+      <p id="successText"></p>
+      <img id="successCar" alt="2026 Ford Mustang" src="https://cdn.alnaghicms.com/storage/ford_common/car-data/side-images/new-mustang.webp">
+      <div class="ref">Appointment reference: <b id="successRef"></b></div><br>
+      <button class="btn-ghost" id="newBooking" type="button">Book another service</button>
+    </div>
+  </div>
+</main>
+
+<div class="devbar">
+  <button class="devtoggle" id="devToggle" type="button" aria-expanded="false">Show API payload (demo view)</button>
+  <div class="devpanel" id="devPanel">
+    <h4>SAP CDP integration</h4>
+    <div class="row" id="devMeta"></div>
+    <h4>Request payload</h4>
+    <pre id="devRequest">Submit the form to see the payload sent to SAP CDP.</pre>
+    <h4>Response</h4>
+    <pre id="devResponse">–</pre>
+  </div>
+</div>
+
+<footer><div class="inner"><span>Demo page for an SAP Customer Data Platform proof of concept – not an official Ford or Mohamed Yousuf Naghi Motors website.</span><span>Privacy · Terms · Cookie settings</span></div></footer>
+
+<script>
+/* =====================================================================
+   CONFIG - how the booking form reaches SAP CDP
+   mode "proxy": POST to proxyUrl, a Cloudflare Worker that holds the CDP key/secret,
+                 forwards to SAP CDP and adds the CORS headers. No secret in this page.
+   mode "mock" : no network call, simulated success (for rehearsals).
+   ===================================================================== */
+const CONFIG = {
+  mode: "proxy",
+  proxyUrl: "https://naghi-service.ayushbhardwaj1901.workers.dev/",   // your Cloudflare Worker URL
+  sourceSystem: "Ford Naghi Website Service Booking",
+  bookingChannel: "Website",
+  brand: "Ford", model: "Mustang", modelYear: 2026, currency: "SAR"
+};
+
+/* ---------- Demo data: replace with the real service catalogue / price list / centres ---------- */
+const SERVICES = [
+  { id:"PERIODIC_MAINTENANCE", label:"Periodic maintenance",      mins:120, base:450 },
+  { id:"REPAIR",               label:"Repair / fault diagnosis",  mins:180, base:300 },
+  { id:"RECALL",               label:"Recall / service campaign", mins:90,  base:0   },
+  { id:"INSPECTION",           label:"Inspection & health check", mins:60,  base:150 }
+];
+const INTERVALS = ["10,000 km","20,000 km","30,000 km","40,000 km","50,000 km","60,000 km","70,000 km","80,000 km","90,000 km","100,000 km"];
+const JOBS = [["Oil & filter change",180],["Brake check & service",250],["Tyre rotation & balancing",120],["Wheel alignment",150],["A/C check & service",200],["Battery health check",60],["Software update",0],["Full vehicle health check",0]];
+const CENTERS = [["JED","Jeddah"],["MKK","Makkah"],["MED","Madinah"],["TIF","Taif"],["ABH","Abha"],["KMX","Khamis Mushait"],["JZN","Jazan"]]
+  .map(([c,city]) => ({ code:`FN-${c}-SVC`, name:`Naghi Motors Service Centre – ${city}`, city }));
+const ADVISORS = [["A1","Ahmed Al-Ghamdi"],["A2","Khalid Al-Harbi"]];
+const SLOTS = ["08:00","09:00","10:00","11:00","13:00","14:00","15:00","16:00"];
+const CONV = [
+  { id:"WAIT",     label:"I'll wait at the centre" },
+  { id:"PICKUP",   label:"Pick-up & drop-off" },
+  { id:"COURTESY", label:"Courtesy car" }
+];
+
+/* ---------- Helpers ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt12 = t => { const [h,m] = t.split(":").map(Number); return (h%12||12) + ":" + String(m).padStart(2,"0") + (h<12 ? " AM" : " PM"); };
+const chip = (type,name,id,value,label,extra="") => `<div class="chip"><input type="${type}" name="${name}" id="${id}" value="${esc(value)}" ${extra}><label for="${id}">${esc(label)}</label></div>`;
+const sel = name => { const r = document.querySelector(`input[name="${name}"]:checked`); return r ? r.value : null; };
+const svc = () => SERVICES.find(s => s.id === sel("svc"));
+const center = () => CENTERS.find(c => c.code === $("center").value);
+
+/* ---------- Render ---------- */
+$("svcTypes").innerHTML = SERVICES.map(s => chip("radio","svc","s_"+s.id,s.id,s.label)).join("");
+$("interval").innerHTML = `<option value="">Select interval</option>` + INTERVALS.map(i => `<option>${i}</option>`).join("");
+$("jobs").innerHTML = JOBS.map((j,i) => chip("checkbox","job","j_"+i,j[0],j[0],`data-price="${j[1]}"`)).join("");
+$("center").innerHTML = `<option value="">Select a service centre</option>` + CENTERS.map(c => `<option value="${c.code}">${esc(c.city)} – ${esc(c.name)}</option>`).join("");
+$("slots").innerHTML = SLOTS.map((t,i) => chip("radio","slot","t_"+i,t,fmt12(t))).join("");
+$("conv").innerHTML = CONV.map(c => chip("radio","conv","c_"+c.id,c.id,c.label)).join("");
+
+const d = new Date(); d.setDate(d.getDate()+1);
+$("date").min = d.toLocaleDateString("en-CA");
+d.setDate(d.getDate()+89); $("date").max = d.toLocaleDateString("en-CA");
+
+function estimate(){
+  const s = svc(); if (!s) return null;
+  return s.base + [...document.querySelectorAll('input[name="job"]:checked')].reduce((a,j) => a + Number(j.dataset.price), 0);
+}
+function updateSummary(){
+  const s = svc(), c = center(), e = estimate();
+  $("sumSvc").textContent = s ? s.label : "–";
+  $("sumDate").textContent = $("date").value ? new Date($("date").value + "T12:00:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric"}) : "–";
+  $("sumTime").textContent = sel("slot") ? fmt12(sel("slot")) : "–";
+  $("sumCenter").textContent = c ? c.city : "–";
+  $("sumEst").textContent = e === null ? "–" : `${CONFIG.currency} ${e.toLocaleString("en-US")}`;
+}
+
+/* ---------- Dynamic fields ---------- */
+document.querySelectorAll('input[name="svc"]').forEach(r => r.addEventListener("change", () => {
+  $("intervalField").classList.toggle("hide", r.value !== "PERIODIC_MAINTENANCE");
+  $("recallField").classList.toggle("hide", r.value !== "RECALL");
+}));
+$("center").addEventListener("change", () => {
+  const c = center(), a = $("advisor");
+  a.disabled = !c;
+  a.innerHTML = c ? `<option value="">No preference</option>` + ADVISORS.map(([id,n]) => `<option value="${c.code}-${id}" data-name="${esc(n)}">${esc(n)}</option>`).join("") : `<option value="">Choose a centre first</option>`;
+});
+
+/* ---------- Input hygiene + validation ---------- */
+$("mobile").addEventListener("input", e => { e.target.value = e.target.value.replace(/\D/g,"").replace(/^0/,"").slice(0,9); });
+$("vin").addEventListener("input", e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,17); });
+$("reg").addEventListener("input", e => { e.target.value = e.target.value.toUpperCase(); });
+const form = $("serviceForm");
+["input","change"].forEach(ev => form.addEventListener(ev, e => {
+  const f = e.target.closest(".field"); if (f) f.classList.remove("invalid");
+  if (e.target.id === "privacyConsent") $("privacyCheck").classList.remove("invalid");
+  updateSummary();
+}));
+
+function validate(){
+  let ok = true, first = null;
+  const fail = (field, focus) => { ok = false; field.classList.add("invalid"); first = first || focus || field; };
+  const f = id => $(id).closest(".field");
+  if (!$("firstName").value.trim()) fail(f("firstName"), $("firstName"));
+  if (!$("lastName").value.trim()) fail(f("lastName"), $("lastName"));
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test($("email").value.trim())) fail(f("email"), $("email"));
+  if (!/^5\d{8}$/.test($("mobile").value)) fail(f("mobile"), $("mobile"));
+  if (!/^[A-HJ-NPR-Z0-9]{17}$/.test($("vin").value)) fail(f("vin"), $("vin"));
+  if ($("reg").value.trim().length < 3) fail(f("reg"), $("reg"));
+  const odo = $("odo").value; if (odo === "" || !(+odo >= 0 && +odo <= 999999)) fail(f("odo"), $("odo"));
+  if (!$("warranty").value) fail(f("warranty"), $("warranty"));
+  const s = svc();
+  if (!s) fail($("svcField"));
+  if (s && s.id === "PERIODIC_MAINTENANCE" && !$("interval").value) fail($("intervalField"), $("interval"));
+  if (!$("center").value) fail($("centerField"), $("center"));
+  const dv = $("date").value;
+  if (!dv || dv < $("date").min || dv > $("date").max) fail($("dateField"), $("date"));
+  if (!sel("slot")) fail($("slotField"));
+  if (!sel("conv")) fail($("convField"));
+  if (!$("privacyConsent").checked){ ok = false; $("privacyCheck").classList.add("invalid"); first = first || $("privacyConsent"); }
+  if (first) first.scrollIntoView({ behavior:"smooth", block:"center" });
+  return ok;
+}
+
+/* ---------- Payload for SAP CDP (field order and names match the CDP event) ---------- */
+function buildPayload(){
+  const now = new Date(), s = svc(), c = center(), adv = $("advisor"), advOpt = adv.options[adv.selectedIndex];
+  const stamp = now.toISOString().slice(0,10).replace(/-/g,"");
+  const rnd = () => Math.random().toString(36).slice(2,8).toUpperCase();
+  const start = new Date(`${$("date").value}T${sel("slot")}:00+03:00`);          // slot is Saudi local time (UTC+3)
+  const end = new Date(start.getTime() + s.mins*60000);
+  const conv = sel("conv");
+  return {
+    eventId: `SVC-EVT-${stamp}-${rnd()}`,
+    eventTimestamp: now.toISOString(),
+    sourceSystem: CONFIG.sourceSystem,
+    customerId: $("customerId").value.trim() || null,
+    email: $("email").value.trim().toLowerCase(),
+    mobile: "+966" + $("mobile").value,
+    firstName: $("firstName").value.trim(),
+    lastName: $("lastName").value.trim(),
+    appointmentId: `APT-${stamp}-${rnd()}`,
+    appointmentStatus: "BOOKED",
+    bookingChannel: CONFIG.bookingChannel,
+    bookedAt: now.toISOString(),
+    appointmentStart: start.toISOString(),
+    appointmentEnd: end.toISOString(),
+    checkedInAt: null,
+    cancellationReason: null,
+    serviceType: s.id,
+    serviceInterval: s.id === "PERIODIC_MAINTENANCE" ? $("interval").value : null,
+    requestedJobs: [...document.querySelectorAll('input[name="job"]:checked')].map(j => j.value),
+    customerComments: $("comments").value.trim() || null,
+    recallCampaignCode: s.id === "RECALL" ? ($("recall").value.trim() || null) : null,
+    estimatedAmount: estimate(),
+    currency: CONFIG.currency,
+    pickupDropRequired: conv === "PICKUP",
+    courtesyCarRequired: conv === "COURTESY",
+    waitAtCenter: conv === "WAIT",
+    vin: $("vin").value,
+    registrationNumber: $("reg").value.trim(),
+    brand: CONFIG.brand,
+    model: CONFIG.model,
+    modelYear: CONFIG.modelYear,
+    odometerKm: parseInt($("odo").value, 10),
+    underWarranty: $("warranty").value === "yes",
+    serviceCenterCode: c.code,
+    serviceCenterName: c.name,
+    city: c.city,
+    serviceAdvisorId: adv.value || null,
+    serviceAdvisorName: adv.value ? advOpt.dataset.name : null
+  };
+}
+
+/* ---------- Send ---------- */
+async function send(payload){
+  if (CONFIG.mode === "mock"){
+    await new Promise(r => setTimeout(r, 900));
+    return { ok:true, status:200, body:{ mock:true, message:"Mock mode – no data sent. Set CONFIG.mode to 'proxy' to send to SAP CDP." } };
+  }
+  const res = await fetch(CONFIG.proxyUrl, { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(payload) });
+  const text = await res.text();
+  let body; try { body = JSON.parse(text); } catch { body = text; }
+  // CDP can answer HTTP 200 with a non-zero errorCode – treat that as a failure too
+  const apiOk = res.ok && !(body && typeof body === "object" && body.errorCode && body.errorCode !== 0);
+  return { ok:apiOk, status:res.status, body };
+}
+$("devMeta").innerHTML = `<span class="pill">mode: ${esc(CONFIG.mode)}</span><span class="pill">POST ${esc(CONFIG.mode === "mock" ? "none (mock)" : CONFIG.proxyUrl)}</span>`;
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  $("formMsg").textContent = ""; $("formMsg").className = "form-msg";
+  if (!validate()){ $("formMsg").textContent = "Please check the highlighted fields."; $("formMsg").classList.add("error"); return; }
+  const payload = buildPayload();
+  $("devRequest").textContent = JSON.stringify(payload, null, 2);
+  $("devResponse").textContent = "Sending…";
+  const btn = $("submitBtn"); btn.disabled = true; btn.classList.add("loading"); btn.querySelector(".label").textContent = "Booking…";
+  try {
+    const r = await send(payload);
+    $("devResponse").textContent = `HTTP ${r.status}\n` + (typeof r.body === "string" ? r.body : JSON.stringify(r.body, null, 2));
+    if (!r.ok) throw new Error("API error");
+    const day = new Date(payload.appointmentStart).toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric",timeZone:"Asia/Riyadh"});
+    $("successTitle").textContent = `Thank you, ${payload.firstName}!`;
+    $("successText").textContent = `Your ${svc().label.toLowerCase()} for the ${payload.modelYear} Ford ${payload.model} is booked for ${day} at ${fmt12(sel("slot"))}, at ${payload.serviceCenterName}. A Ford Naghi service advisor will confirm with you shortly.`;
+    $("successRef").textContent = payload.appointmentId;
+    $("formView").style.display = "none"; $("successView").style.display = "block";
+    $("booking").scrollIntoView({ behavior:"smooth" });
+  } catch (err) {
+    if ($("devResponse").textContent === "Sending…") $("devResponse").textContent = String(err);
+    $("formMsg").textContent = "Sorry, we couldn't book your appointment. Please try again.";
+    $("formMsg").classList.add("error");
+  } finally {
+    btn.disabled = false; btn.classList.remove("loading"); btn.querySelector(".label").textContent = "Book appointment";
+  }
+});
+
+$("newBooking").addEventListener("click", () => {
+  form.reset();
+  $("intervalField").classList.add("hide"); $("recallField").classList.add("hide");
+  $("advisor").disabled = true; $("advisor").innerHTML = `<option value="">Choose a centre first</option>`;
+  updateSummary();
+  $("successView").style.display = "none"; $("formView").style.display = "block";
+});
+
+/* Demo view toggle (also opens automatically with ?debug=1) */
+function toggleDev(force){
+  const open = force ?? !$("devPanel").classList.contains("open");
+  $("devPanel").classList.toggle("open", open);
+  $("devToggle").setAttribute("aria-expanded", open);
+  $("devToggle").textContent = open ? "Hide API payload" : "Show API payload (demo view)";
+}
+$("devToggle").addEventListener("click", () => toggleDev());
+if (new URLSearchParams(location.search).get("debug") === "1") toggleDev(true);
+const qCid = new URLSearchParams(location.search).get("customerId"); if (qCid) $("customerId").value = qCid;
+updateSummary();
+</script>
+</body>
+</html>
